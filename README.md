@@ -14,6 +14,15 @@ Tomando como ejemplo una app tipo to-do list: La carcasa que engloba toda la app
 
 ![Component Structure](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/component-structure.png)
 
+Durante este curso vamos a desarrollar una aplicación web llamada Planify dónde pondremos en práctica todos lo aprendido.
+
+## Planify
+
+Planify es una aplicación web desarrollada con Angular cuyo objetivo es facilitar la gestión personal de tareas de manera intuitiva, organizada y visualmente atractiva.
+
+Planify permitirá al usuario crear, visualizar, editar y eliminar tareas, asignándoles distintos niveles de prioridad y estado de progreso. Además, se implementarán funcionalidades adicionales que fomenten la productividad y la planificación diaria, como resúmenes de tareas, filtrado por estado o prioridad, y una interfaz adaptada a diferentes dispositivos (diseño responsive gracias a Bootstrap).
+
+
 # 2. Creación de un proyecto Angular.
 
 Para poder crear un proyecto en Angular previamente necesitamos tener instalado node y typescript. Además, es necesario instalar Angular CLI, herramienta que nos permitirá crear la estructura de un proyecto Angular.
@@ -315,7 +324,7 @@ ng generate component components/navbar
 El resultado tras la creación de los componentes debe ser el siguiente:
 
 
-![Estructura](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/reto-componentes.png)
+![Estructura](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/reto-componentes.png)
 
 ### Reto 4. Configurando el Navbar y Footer.
 
@@ -330,7 +339,8 @@ Una vez modificada la plantilla de ambos componentes, importalos en el component
 
 
 Tras realizar este reto nuestra aplicación debe tener el siguiente aspecto:
-![NavbarFooter](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/reto-navbar-footer.png)
+![NavbarFooter](https://raw.githubusercontent.com/![Estructura](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/reto-componentes.png)
+/angular-tutorial/refs/heads/main/readme-images/reto-navbar-footer.png)
 
 
 # 7. Sintaxis de la plantilla.
