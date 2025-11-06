@@ -18,13 +18,13 @@ Tomando como ejemplo una app tipo to-do list: La carcasa que engloba toda la app
 
 Para poder crear un proyecto en Angular previamente necesitamos tener instalado node y typescript. Además, es necesario instalar Angular CLI, herramienta que nos permitirá crear la estructura de un proyecto Angular.
 
-```bash
+```jsx
 npm install -g @angular/cli
 ```
 
 Una vez instalado Angular CLI podremos crear un nuevo proyecto mediante el siguiente comando:
 
-```bash
+```jsx
 ng new <nombre_proyecto>
 ```
 
@@ -37,6 +37,9 @@ ng serve
 ```
 
 Desde este momento todos los cambios que realicemos en nuestra aplicación se desplegarán de manera automática en el servidor.
+
+## Reto 1. Creación del proyecto Planify
+Crea la estructura base del proyecto Planify. Configura correctamente el entorno seleccionando el preprocesador CSS para el estilo de la aplicación y desactivando el SSR. Sube tu proyecto a GitHub para poder gestionar correctamente el control de cambios.
 
 # 3. Estructura de un proyecto Angular
 
@@ -81,7 +84,6 @@ Dentro de la carpeta src/app se encuentra el componente principal de la aplicaci
     ```jsx
     @Component({
     selector: 'app-root',
-    standalone: true,
     imports: [RouterOutlet],
     templateUrl: './app.component.html',
     styleUrl: './app.component.css'
@@ -103,7 +105,7 @@ Dentro de la carpeta src/app se encuentra el componente principal de la aplicaci
 
 # 4. Instalación de Bootstrap en Angular
 
-Bootstrap es un popular **framework de CSS** que facilita el desarrollo de aplicacionesw web con diseños modernos, adaptativos y consistentes. Proporciona una serie de **estilos predefinidos**, **componentes** y **utilidades CSS** para la creación rápida de interfaces atractivas y responsive, es decir, que se adaptan automáticamente a diferentes tamaños de pantalla (escritorios, tablets, móviles, etc.).
+Bootstrap es un popular **framework de CSS** que facilita el desarrollo de aplicaciones web con diseños modernos, adaptativos y consistentes. Proporciona una serie de **estilos predefinidos**, **componentes** y **utilidades CSS** para la creación rápida de interfaces atractivas y responsive, es decir, que se adaptan automáticamente a diferentes tamaños de pantalla (escritorios, tablets, móviles, etc.).
 
 ## 4.1. ¿Cómo funciona Bootstrap?
 
@@ -150,11 +152,11 @@ Una vez instalado el módulo de node, tenemos que indicarle a Angular dónde se 
 ```json
 "styles": [
   "src/styles.css",
-  **"node_modules/bootstrap/dist/css/bootstrap.min.css",
-  "node_modules/bootstrap-icons/font/bootstrap-icons.min.css"**
+  "node_modules/bootstrap/dist/css/bootstrap.min.css",
+  "node_modules/bootstrap-icons/font/bootstrap-icons.min.css"
 ],
 "scripts": [
-  **"node_modules/bootstrap/dist/js/bootstrap.min.js"**
+   "node_modules/bootstrap/dist/js/bootstrap.min.js"
 ]
 ```
 
@@ -178,16 +180,16 @@ En este ejemplo las columnas se dividen en partes iguales de 4 columnas cada una
 
 En dispositivos medianos y más grandes estas columnas se mostrarán en una sola fila. En dispositivos más pequeños se ajustarán automáticamente en filas de una sola columna.
 
-## Ejercicio 1: Instalación de Bootstrap.
+## Reto 2: Instalación de Bootstrap.
 
-Realiza la instalación de Bootstrap y Bootstrap Icons en tu proyecto de Angular.
+Realiza la instalación de Bootstrap y Bootstrap Icons en tu proyecto Planify y verifica que este funciona correctamente borrando todo el contenido del archivo app-component.html y añadiendo algún componente de Bootstrap.
 
 
 # 5. Interpolación.
 
 La interpolación es una técnica que se utiliza en Angular para enlazar datos desde el controlador a la vista o plantilla HTML, lo que nos permitirá mostrar valores de las propiedades de un componente de manera dinámica. 
 
-Para poder indicarle al framework que evalué una expresión de controlador usaremos dobles llaves {{ expresion }}
+Para poder indicarle al framework que evalué una expresión de controlador usaremos dobles llaves {{ expresión }}
 
 Supongamos que tenemos una propiedad llamada nombre en el controlador de mi componente:
 
@@ -197,13 +199,12 @@ import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = '@josearodriguezdaw';
+  title = '@joseprofeinformatica';
 }
 
 ```
@@ -244,11 +245,11 @@ Toda aplicación en Angular cuenta con un componente principal AppComponent, des
 
 La forma más sencilla que tenemos de crear un componente es usando la consola de Angular, mediante el siguiente comando:
 
-```html
+```jsx
 ng generate component components/navbar
 ```
 
-En la anterior línea hemos creado un componente llamado navbar dentro del contenedor componets/ para mejorar su organización.
+En la anterior línea hemos creado un componente llamado navbar dentro del contenedor components/ para mejorar su organización.
 
 Todo componente cuenta con un selector que nos permitirá utilizarlo dentro de otro componente, por ejemplo, dentro del componente principal. El selector básicamente lo que establece es el nombre de la etiqueta que se deberá usar para importar dicho componente.
 
@@ -258,7 +259,6 @@ Por ejemplo, si accedemos a la clase del componente que hemos creado podremos ob
 import { Component } from '@angular/core';
 @Component({
   selector: 'app-navbar',
-  standalone: true,
   imports: [],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
@@ -267,7 +267,7 @@ export class NavbarComponent {
 }
 ```
 
-Para poder usar este componente en nuestro proyecto primeramente, será necesario añadirlo a la propiedad `imports`  de la clase AppComponent y posteriormente lo importaremos dentro del documento HTML empleando el nombre de su etiqueta.
+Para poder usar este componente en nuestro proyecto, primeramente, será necesario añadirlo a la propiedad `imports`  de la clase AppComponent y posteriormente lo importaremos dentro del documento HTML empleando el nombre de su etiqueta.
 
 ```tsx
 @Component({
@@ -284,15 +284,17 @@ Para poder usar este componente en nuestro proyecto primeramente, será necesari
 app-navbar></app-navbar>
 ```
 
-### EJERCICIO 2. Creación componentes app.
+### Reto 3. Creación de los componentes de Planify.
 
-El objetivo del presente ejercicio es comenzar a crear los diferentes componentes que formarán parte del proyecto que vamos a ir desarrollando durante los siguientes ejercicios y que nos servirá para poner en práctica todos los contenidos que vamos adquiriendo.
+El objetivo de este reto es comenzar a crear los diferentes componentes
+que conformarán nuestra aplicación Planify y que iremos desarrollando en futuros retos. Para ello, será necesario crear la siguiente estructura de componentes:
 
-Concretamente, el objetivo es desarrollar una aplicación web que nos permita gestionar tareas. Para ello, vamos a crear la siguiente estructura de componentes:
+`src/app/componentes/` → carpeta que contendrá todos los componentes creados. No es necesario crearla, pero sí indicarla en la ruta a la hora de crear los siguientes componentes.
 
-`src/app/componentes/` → carpeta que contendrá todos los componentes creados.
-
-- `navbar/` → componente que contendrá la barra de navegación de nuestra aplicación.
+- `navbar/` → componente que contendrá la barra de navegación de nuestra aplicación. Ejemplo de creación: 
+```bash 
+ng generate component components/navbar
+```
 
 - `footer/` → componente que contendrá el footer de nuestra aplicación.
 
@@ -310,7 +312,26 @@ Concretamente, el objetivo es desarrollar una aplicación web que nos permita ge
 
   - `taskresume/` → componente que mostrará de manera resumida una tarea.
 
-Modifica las plantillas de los componentes `navbar` y `footer` para añadir un menú y un pie de página de bootstrap, e importa dichos componentes en el componente principal `app-component.`
+El resultado tras la creación de los componentes debe ser el siguiente:
+
+
+![Estructura](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/reto-componentes.png)
+
+### Reto 4. Configurando el Navbar y Footer.
+
+Modifica la plantilla de los componentes `navbar` y añade una barra de navegación de Bootstrap. Modifica el HTML del componente de Bootstrap, cambia el nombre de la appa y añade las siguientes opciones al menú:
+ - Home
+ - Tasks
+ - Dashboard
+
+Modifica la plantilla del componente `footer` y añade un pie de página de bootstrap.
+
+Una vez modificada la plantilla de ambos componentes, importalos en el componente principal `app-component.`
+
+
+Tras realizar este reto nuestra aplicación debe tener el siguiente aspecto:
+![NavbarFooter](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/reto-navbar-footer.png)
+
 
 # 7. Sintaxis de la plantilla.
 
