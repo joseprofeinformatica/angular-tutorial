@@ -339,8 +339,8 @@ Una vez modificada la plantilla de ambos componentes, importalos en el component
 
 
 Tras realizar este reto nuestra aplicación debe tener el siguiente aspecto:
-![NavbarFooter](https://raw.githubusercontent.com/![Estructura](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/reto-componentes.png)
-/angular-tutorial/refs/heads/main/readme-images/reto-navbar-footer.png)
+
+![NavbarFooter](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/reto-navbar-footer.png)
 
 
 # 7. Sintaxis de la plantilla.
