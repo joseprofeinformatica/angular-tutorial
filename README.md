@@ -304,6 +304,7 @@ que conformarán nuestra aplicación Planify y que iremos desarrollando en futur
 ```bash 
 ng generate component components/navbar
 ```
+- `home/` → componente que contendrá la pantalla inicial de la aplicación.
 
 - `footer/` → componente que contendrá el footer de nuestra aplicación.
 
@@ -324,7 +325,7 @@ ng generate component components/navbar
 El resultado tras la creación de los componentes debe ser el siguiente:
 
 
-![Estructura](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/reto-componentes.png)
+![EstructuraComponentes](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/reto-estructura-componentes.png)
 
 ### Reto 4. Configurando el Navbar y Footer.
 
@@ -332,10 +333,16 @@ Modifica la plantilla de los componentes `navbar` y añade una barra de navegaci
  - Home
  - Tasks
  - Dashboard
+ - Signin
+ - Login
+ - Logout
 
 Modifica la plantilla del componente `footer` y añade un pie de página de bootstrap.
 
-Una vez modificada la plantilla de ambos componentes, importalos en el componente principal `app-component.`
+Una vez modificada la plantilla de ambos componentes, importalos en el componente principal `app-component.`. Añade también en medio de ambos componentes el Home. La estructura de componentes deberá quedar así:
+
+![OrganizacionComponentes](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/reto-organizacion-componentes.png)
+
 
 
 Tras realizar este reto nuestra aplicación debe tener el siguiente aspecto:
@@ -345,7 +352,7 @@ Tras realizar este reto nuestra aplicación debe tener el siguiente aspecto:
 
 # 7. Sintaxis de la plantilla.
 
-En angular una plantilla es un fragmento de HTML. Sin embargo, dentro de esta se puede usar una sintaxis especial que permitirá añadirle un comportamiento dinámico a nuestra plantilla. Para emplear esta sintaxis especial se usará el carácter `@` .
+En angular una plantilla es un fragmento de HTML. Sin embargo, dentro de esta se puede usar una sintaxis especial que permitirá añadirle un comportamiento dinámico a nuestra plantilla. Para emplear esta sintaxis especial se usará el carácter `@`.
 
 Dado el contenido del controlador:
 
