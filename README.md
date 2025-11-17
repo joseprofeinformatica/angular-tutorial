@@ -922,6 +922,297 @@ A continuación se muestra cómo se deberán organizar los diferentes componente
     - Debe implementar los mecanismos de comunicación necesarios para que reciba un objeto tarea del componente padre y muestre la información de dicho objeto en la plantilla.
     - Debe implementar los mecanismos de comunicación
 
+# 14. Routing.
+
+Angular cuenta con un módulo encargado de gestionar las rutas de nuestra aplicación, decidiendo qué pantalla cargar en cada momento. Mediante Routing nuestra aplicación se comportará como una SPA (Single Page Application), donde no se realizan recargas completas del navegador.
+
+Imaginemos que tenemos una aplicación para gestionar tareas, algunas de las posibles rutas de nuestra aplicación pueden ser:
+
+- [http://localhost:4200/](http://localhost:4200/)login
+- [http://localhost:4200/](http://localhost:4200/)singin
+- [http://localhost:4200/](http://localhost:4200/)home
+- [http://localhost:4200/](http://localhost:4200/)tasks
+- [http://localhost:4200/](http://localhost:4200/)dashboard
+- [http://localhost:4200/](http://localhost:4200/)dashboard/profile
+- [http://localhost:4200/](http://localhost:4200/)dashboard/stats
+
+Cada vez que se acceda a algunas de las anteriores rutas Angular cargará un componente específico, el que configuremos. 
+
+Antes de comenzar a trabajar con rutas en Angular es necesario comprobar que nuestro proyecto tiene habilitado el routing. Esto ha sido indicado durante la creación del proyecto `ng new` .
+
+Lo ideal sería contar con un componente dedicado para cada una de las rutas de primer nivel, es decir, siguiendo con el ejemplo anterior deberíamos tener los siguientes componentes: `login, singin, home, tasks, profile, stats`. Estos componentes los crearemos dentro del directorio `src/app/pages`. 
+
+![pages-structure](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/pages-structure.png)
+
+Fuente: [https://www.ganatan.com/tutorials/routing-with-angular](https://www.ganatan.com/tutorials/routing-with-angular)
+
+Cada uno de estos componentes serán inyectados en el componente principal de nuestra aplicación `app-componet` , concretamente, se reemplazará la etiqueta `<router-outlet />` por el módulo en cuestión que sea cargado según la ruta indicada. Dentro de estos módulos “padres” se podrán cargar otros componentes hijos, así como usar rutas anidadas, lo cual lo veremos más adelante. A continuación se muestra un gráfico del funcionamiento:
+
+![angular-routing](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/angular-routing.png)
+
+
+Fuente: [https://www.ganatan.com/tutorials/routing-with-angular](https://www.ganatan.com/tutorials/routing-with-angular)
+
+## 14.1. Configuración de Rutas simples.
+
+1. **Modificación del archivo `src/app/app.routes.ts` :**
+    
+    Lo primero que vamos a realizar será definir las diferentes rutas que tendrá nuestra aplicación y los componentes asociados a dichas rutas:
+    
+    ```tsx
+    //app.routes.ts
+    import { Routes } from '@angular/router';
+    import { AppComponent } from './app.component';
+    import { HomeComponent} from './pages/general/home/home.component';
+    import { LoginComponent} from './pages/general/login/login.component';
+    import { NotFoundComponent} from './pages/general/notfound/notfound.component';
+    
+    export const routes: Routes = [
+        {path:'home', component:HomeComponent},
+        {path:'login', component:LoginComponent},
+        {path:'notfound', component:NotFoundComponent},
+        {path:'',redirectTo:'/home',pathMatch:'full'},
+        {path:'**',redirectTo:'/home',pathMatch:'full'}];
+    ```
+    
+    En el archivo anterior hemos asociado las rutas /home y /login a los componentes HomeComponent y LoginComponent. Además, hemos aplicado una redireción para que cada vez que el usuario acceda a la ruta raiz del proyecto, es decir, a / , se le redireccione a /home. 
+    
+    Además, hemos configurado la página 404 de nuestra aplicación para que cada vez que el usuario acceda a una ruta no existente se cargue dicho componente. Para realizar esto, lo primero que hemos realizado a sido asociar el path /notfound al componente mediante `{path:'notfound', component:NotFoundComponent}` , y posteriormente, al final del arreglo de rutas (importante que se el último valor del arreglo), hemos indicado que todas aquellas rutas que coincidan con “**” sean redireccionadas a notfound.
+    
+2. **Configuración del controlador del componente app.component.ts**
+    
+    Para que el componente sea compatible con el Routing es necesario importar las siguientes clases dentro del decorador `@componente` . Esta configuración será necesaria realizarla en todos los componentes que vayan a inyectar algún otro componente hijo mediante routing. En nuestro caso solo realizaremos dicha configuración en el componente app.componente ya que será aquí donde se cargarán los diferentes componentes según la ruta seleccionada.
+    
+
+```tsx
+//app.component.ts
+
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet, RouterLink } from '@angular/router';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, **RouterOutlet, RouterLink**],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+}
+```
+
+1. **Configuración de la plantilla app.component.html**
+
+Para que un hipervínculo use una ruta configurada en el routing de nuestra aplicación es necesario utilizar el atributo routerLink=”/ruta”, tal y como se muestra a continuación:
+
+```
+<div id="menu">
+  <a routerLink="/home">Home</a> -
+  <a routerLink="/profile">Profile</a>
+</div>
+
+<router-outlet />
+```
+
+Es importante que dicha plantilla cuente con la etiqueta `<router-outlet />` ya que será aquí dónde se inyecten los componentes asociados a la ruta en la que haga clic el usuario, por ejemplo, el componente `/home` o `/profile`, en el caso anterior.
+
+## 14.2. Configuración de rutas con parámetros.
+
+Angular también permite que se pase algún parámetro en la ruta para que pueda ser recuperado desde el controlador y modificar la lógica del componente asociado a dicha ruta según el valor del parámetro recibido.
+
+Por ejemplo, nuestra aplicación sobre gestión de tareas puede tener una ruta que sea la siguiente [http://localhost:4200/task/323](http://localhost:4200/articulos/323) que nos permita modificar una tarea en concreto, en este caso, la tareas con identificador 323. 
+
+Para lograr esto, será necesario modificar el componente asociado a la ruta /task para capturar el valor del parámetro pasado y el archivo app.routes.ts para indicarle que dicha ruta recibirá un parámetro.
+
+1. **Modificación del archivo app.routes.ts**
+
+```tsx
+//app.routes.ts
+export const routes: Routes = [{
+  path: "task/:id",
+  component: TaskComponent
+}];
+```
+
+En el código anterior hemos definido el path y mediante `:id` hemos indicado que el primer parámetro tendrá el identificador `id` 
+
+Si necesitásemos pasarle a una ruta más de un parámetro es tan sencillo como seguir la estructura anterior. Por ejemplo: `"tasklist/:id1/:id2/id3"` .
+
+1. **Acceso al parámetro desde el controlador:**
+
+Para que nuestro controlador pueda acceder al parámetro indicado en la ruta, debemos modificar nuestro constructor para que reciba un objeto `ActivatedRoute` quedando de la siguiente forma:
+
+```tsx
+export class TaskformComponent implements OnInit{
+
+  constructor(private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+    var id = params.get('id');
+    console.log(id);
+    });
+  }
+}
+```
+
+Mediante el código anterior hemos obtenido una ruta con la que operaremos usando la implementación del ngOnInit (función que se ejecuta justo después de recibir todos los parámetros y antes de renderizar la plantilla). 
+
+Dentro de ngOnInit() nos estamos suscribiendo a los parámetros de nuestra ruta, lo que nos permitirá reaccionar a cambios dinámicos si la ruta cambia sin necesidad de recargar la página.
+
+## 14.3. Rutas anidadas.
+
+Las rutas anidadas nos permitirán organizar los componentes de nuestra aplicación de manera jerárquica, lo que nos facilitará la construcción de aplicaciones complejas. Se suelen utilizar cuando un componente tiene sus propias subrutas para cargar componentes hijos dentro del componente padre de manera dinámica.
+
+Imaginemos que nuestra aplicación tiene un componente padre llamado DashboardComponent con las siguientes secciones: Estadísticas y Configuración. Para poder cargar dentro de dicho componente la sección específica en la que haga clic el usuario, se deben usar rutas anidadas.
+
+Para llevar a cabo esto es necesario realizar la siguiente configuración:
+
+1. **Configuración del archivo app.routes.ts:**
+
+```tsx
+**#app.routes.ts**
+export const routes: Routes = [
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    children: [
+      {
+        path: 'stats',
+        component: StatsComponent
+      },
+      {
+        path: 'configuration',
+        component: ConfigurationComponent
+      }
+    ]
+  }
+]
+```
+
+A la ruta del componente padre le hemos añadido dos rutas anidadas empleando la propiedad `children` el cual recibe un arreglo de rutas anidadas.
+
+1. **Configuración del controlador del componente DashboardComponent:**
+
+Será necesario importar en el decorador de nuestro componente los módulos de routing, tal y como hemos explicado en el ejemplo anterior:
+
+```tsx
+  imports: [CommonModule, **RouterOutlet, RouterLink**],
+```
+
+1. **Configuración de la plantilla del componente DashboardComponent:**
+
+```tsx
+<!-- dashboard.component.html -->
+<h1>Dashboard</h1>
+<nav>
+  <a routerLink="stats">Estadísticas</a> |
+  <a routerLink="settings">Configuración</a>
+</nav>
+
+<!-- Aquí se renderizarán los componentes hijos -->
+<router-outlet></router-outlet>
+```
+## 14.4. Redirección desde el controlador.
+
+Para poder realizar una redirección a una ruta específica desde el controlador de un componente es necesario usar el servicio Router, el cual, proporciona un conjunto de métodos para navegar entre rutas.
+
+Supongamos que tenemos un componente llamado LoginComponente que es el encargado de mostrar un formulario de inicio de sesión. En el caso de que el login del usuario sea correcto será necesario redirigir al usuario a la página principal. Para ello, realizaremos los siguientes pasos:
+
+1. **Inyectar el servicio Router en la clase/controlador del componente LoginComponent:**
+
+```
+export class LoginComponent {
+
+  **constructor(private routerService:Router){}**
+}
+
+```
+
+1. **Usar servicio Router:**
+
+```tsx
+export class LoginComponent {
+
+  constructor(private routerService:Router){}
+
+  login(){
+    //TODO: Comprobamos que el login es correcto
+
+    //Redirección sin parámetros
+    **this.routerService.navigate(['/home']);**
+  }
+```
+
+En el ejemplo anterior se realiza una redirección sin parámetros, pero también podría ser necesario redireccionar a una ruta usando algún parámetro. Para ello, debemos usar el servicio Router de la siguiente forma:
+
+```tsx
+this.router.navigate(['/taskform', taskId]);
+```
+
+
+## EJERCICIO 7: Creación y configuración de rutas.
+
+El objetivo del presente ejercicio es configurar las diferentes rutas de nuestra aplicación de gestión de tareas que que el usuario pueda acceder a toda la funcionalidad implementada en los diferentes componentes. Para ello, se deberán realizar los siguientes requisitos funcionales:
+
+- El sistema deberá contar con los siguientes nuevos componentes:
+    - src/app/componentes:
+        - /dashboard/profile
+        - /dashboard/stats
+    - src/app/pages
+        - /auth/login → ya lo tienes creado, solo tienes que moverlo de ubicación.
+        - /auth/singin → ya lo tienes creado, solo tienes que moverlo de ubicación.
+        - /home
+        - /tasks
+        - /dashboard
+        - /notfound
+        
+        La estructura de carpetas de tu proyecto deberá quedar así:
+        
+        ![pages-components-structure](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/pages-components-structure.png)
+        
+
+- El sistema deberá redirigir a los usuarios a los siguientes componentes según la ruta indicada:
+    - `/login` → LoginComponent
+    - `/singin`→ SinginComponent
+    - `/home`→ HomeComponent
+    - `/tasks` → TaskComponent
+    - `/dashboard` → DashboardComponent
+        - `/dashboard/stats`→ ruta anidada que muestra dentro del componente DashboardComponente el componente StatsComponentes.
+        - `/dashboard/profile` → ruta anidada que muestra dentro del componente DashboardComponente el componente ProfileComponent.
+    - `/notfound` → NotfoundComponent
+    - `/` → redirección a `/home`
+    - `**` → redirección a `/notfound`
+    
+    Nota: crea cada uno de los anteriores componentes en un nuevo contenedor ubicado en `/src/app/pages`
+    
+- Modifica las plantillas de los componentes anteriores para que muestren la siguiente información:
+    - `LoginComponent` → Debe mostrar un formulario de Bootstrap que contenga un campo Usuario y un campo Contraseña de tipo password.
+    - `SinginComponente` → Debe mostrar un formulario de Bootstrap que contenga los siguientes campos: Nombre, Apellidos, Email, Usuario, Contraseña, Confirma contraseña.
+    - `HomeComponente` → Debe mostrar los siguientes componentes en el siguiente orden: NavbarComponente, TaskResume, FooterComponent.
+    - `TaskComponent` → Debe mostrar los siguientes componentes en el siguiente orden: NavbarComponente,TaskformComponent, TasklistComponent, FooterComponent.
+    - `DasboardComponente` → Debe mostrar los siguientes componentes en el siguiente orden: NavbarComponente,<router-outlet>, FooterComponent.
+    - `NotFoundComponent` → Debe mostrar un mensaje de texto indicando que la ruta indicada no es válida.
+- El sistema deberá mostrar una barra de navegación cómo la siguiente y redirigir al usuario a la ruta según la opción seleccionada, usando para ello `routerLink`:
+    
+    ![navbar](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/navbar.png)
+    
+    Nota: para poder implementar un menú desplegable cómo se muestra en la imagen anterior puedes hacer uso del siguiente código proporcionado en la página de Bootstrap:[https://getbootstrap.com/docs/5.3/components/navbar/](https://getbootstrap.com/docs/5.3/components/navbar/)
+    
+    Ten en cuenta que tendrás que cambiar en tu archivo `angular.json` la siguiente línea de código:
+    
+    ```json
+                  "node_modules/bootstrap/dist/js/bootstrap.min.js"
+    ```
+    
+    por esta otra para que funcione correctamente la barra de navegación:
+    
+    ```json
+                  "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+    ```
+    
+
 # 12. Formularios basados en plantillas.
 
 Los formularios basados en plantillas o Template-driven Forms son una manera declarativa de crear formularios HTML vinculados a los datos (data binding). Son declarativos porque la mayoría de la lógica del formulario se configura directamente en la plantilla HTML.
@@ -1265,297 +1556,6 @@ El objetivo del presente ejercicio es añadir un formulario reactivo que nos per
 
 
 ![exercise6-scheme](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/exercise6-scheme.png)
-
-# 14. Routing.
-
-Angular cuenta con un módulo encargado de gestionar las rutas de nuestra aplicación, decidiendo qué pantalla cargar en cada momento. Mediante Routing nuestra aplicación se comportará como una SPA (Single Page Application), donde no se realizan recargas completas del navegador.
-
-Imaginemos que tenemos una aplicación para gestionar tareas, algunas de las posibles rutas de nuestra aplicación pueden ser:
-
-- [http://localhost:4200/](http://localhost:4200/)login
-- [http://localhost:4200/](http://localhost:4200/)singin
-- [http://localhost:4200/](http://localhost:4200/)home
-- [http://localhost:4200/](http://localhost:4200/)tasks
-- [http://localhost:4200/](http://localhost:4200/)dashboard
-- [http://localhost:4200/](http://localhost:4200/)dashboard/profile
-- [http://localhost:4200/](http://localhost:4200/)dashboard/stats
-
-Cada vez que se acceda a algunas de las anteriores rutas Angular cargará un componente específico, el que configuremos. 
-
-Antes de comenzar a trabajar con rutas en Angular es necesario comprobar que nuestro proyecto tiene habilitado el routing. Esto ha sido indicado durante la creación del proyecto `ng new` .
-
-Lo ideal sería contar con un componente dedicado para cada una de las rutas de primer nivel, es decir, siguiendo con el ejemplo anterior deberíamos tener los siguientes componentes: `login, singin, home, tasks, profile, stats`. Estos componentes los crearemos dentro del directorio `src/app/pages`. 
-
-![pages-structure](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/pages-structure.png)
-
-Fuente: [https://www.ganatan.com/tutorials/routing-with-angular](https://www.ganatan.com/tutorials/routing-with-angular)
-
-Cada uno de estos componentes serán inyectados en el componente principal de nuestra aplicación `app-componet` , concretamente, se reemplazará la etiqueta `<router-outlet />` por el módulo en cuestión que sea cargado según la ruta indicada. Dentro de estos módulos “padres” se podrán cargar otros componentes hijos, así como usar rutas anidadas, lo cual lo veremos más adelante. A continuación se muestra un gráfico del funcionamiento:
-
-![angular-routing](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/angular-routing.png)
-
-
-Fuente: [https://www.ganatan.com/tutorials/routing-with-angular](https://www.ganatan.com/tutorials/routing-with-angular)
-
-## 14.1. Configuración de Rutas simples.
-
-1. **Modificación del archivo `src/app/app.routes.ts` :**
-    
-    Lo primero que vamos a realizar será definir las diferentes rutas que tendrá nuestra aplicación y los componentes asociados a dichas rutas:
-    
-    ```tsx
-    //app.routes.ts
-    import { Routes } from '@angular/router';
-    import { AppComponent } from './app.component';
-    import { HomeComponent} from './pages/general/home/home.component';
-    import { LoginComponent} from './pages/general/login/login.component';
-    import { NotFoundComponent} from './pages/general/notfound/notfound.component';
-    
-    export const routes: Routes = [
-        {path:'home', component:HomeComponent},
-        {path:'login', component:LoginComponent},
-        {path:'notfound', component:NotFoundComponent},
-        {path:'',redirectTo:'/home',pathMatch:'full'},
-        {path:'**',redirectTo:'/home',pathMatch:'full'}];
-    ```
-    
-    En el archivo anterior hemos asociado las rutas /home y /login a los componentes HomeComponent y LoginComponent. Además, hemos aplicado una redireción para que cada vez que el usuario acceda a la ruta raiz del proyecto, es decir, a / , se le redireccione a /home. 
-    
-    Además, hemos configurado la página 404 de nuestra aplicación para que cada vez que el usuario acceda a una ruta no existente se cargue dicho componente. Para realizar esto, lo primero que hemos realizado a sido asociar el path /notfound al componente mediante `{path:'notfound', component:NotFoundComponent}` , y posteriormente, al final del arreglo de rutas (importante que se el último valor del arreglo), hemos indicado que todas aquellas rutas que coincidan con “**” sean redireccionadas a notfound.
-    
-2. **Configuración del controlador del componente app.component.ts**
-    
-    Para que el componente sea compatible con el Routing es necesario importar las siguientes clases dentro del decorador `@componente` . Esta configuración será necesaria realizarla en todos los componentes que vayan a inyectar algún otro componente hijo mediante routing. En nuestro caso solo realizaremos dicha configuración en el componente app.componente ya que será aquí donde se cargarán los diferentes componentes según la ruta seleccionada.
-    
-
-```tsx
-//app.component.ts
-
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink } from '@angular/router';
-
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule, **RouterOutlet, RouterLink**],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
-})
-export class AppComponent {
-}
-```
-
-1. **Configuración de la plantilla app.component.html**
-
-Para que un hipervínculo use una ruta configurada en el routing de nuestra aplicación es necesario utilizar el atributo routerLink=”/ruta”, tal y como se muestra a continuación:
-
-```
-<div id="menu">
-  <a routerLink="/home">Home</a> -
-  <a routerLink="/profile">Profile</a>
-</div>
-
-<router-outlet />
-```
-
-Es importante que dicha plantilla cuente con la etiqueta `<router-outlet />` ya que será aquí dónde se inyecten los componentes asociados a la ruta en la que haga clic el usuario, por ejemplo, el componente `/home` o `/profile`, en el caso anterior.
-
-## 14.2. Configuración de rutas con parámetros.
-
-Angular también permite que se pase algún parámetro en la ruta para que pueda ser recuperado desde el controlador y modificar la lógica del componente asociado a dicha ruta según el valor del parámetro recibido.
-
-Por ejemplo, nuestra aplicación sobre gestión de tareas puede tener una ruta que sea la siguiente [http://localhost:4200/task/323](http://localhost:4200/articulos/323) que nos permita modificar una tarea en concreto, en este caso, la tareas con identificador 323. 
-
-Para lograr esto, será necesario modificar el componente asociado a la ruta /task para capturar el valor del parámetro pasado y el archivo app.routes.ts para indicarle que dicha ruta recibirá un parámetro.
-
-1. **Modificación del archivo app.routes.ts**
-
-```tsx
-//app.routes.ts
-export const routes: Routes = [{
-  path: "task/:id",
-  component: TaskComponent
-}];
-```
-
-En el código anterior hemos definido el path y mediante `:id` hemos indicado que el primer parámetro tendrá el identificador `id` 
-
-Si necesitásemos pasarle a una ruta más de un parámetro es tan sencillo como seguir la estructura anterior. Por ejemplo: `"tasklist/:id1/:id2/id3"` .
-
-1. **Acceso al parámetro desde el controlador:**
-
-Para que nuestro controlador pueda acceder al parámetro indicado en la ruta, debemos modificar nuestro constructor para que reciba un objeto `ActivatedRoute` quedando de la siguiente forma:
-
-```tsx
-export class TaskformComponent implements OnInit{
-
-  constructor(private route: ActivatedRoute) {}
-
-  ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-    var id = params.get('id');
-    console.log(id);
-    });
-  }
-}
-```
-
-Mediante el código anterior hemos obtenido una ruta con la que operaremos usando la implementación del ngOnInit (función que se ejecuta justo después de recibir todos los parámetros y antes de renderizar la plantilla). 
-
-Dentro de ngOnInit() nos estamos suscribiendo a los parámetros de nuestra ruta, lo que nos permitirá reaccionar a cambios dinámicos si la ruta cambia sin necesidad de recargar la página.
-
-## 14.3. Rutas anidadas.
-
-Las rutas anidadas nos permitirán organizar los componentes de nuestra aplicación de manera jerárquica, lo que nos facilitará la construcción de aplicaciones complejas. Se suelen utilizar cuando un componente tiene sus propias subrutas para cargar componentes hijos dentro del componente padre de manera dinámica.
-
-Imaginemos que nuestra aplicación tiene un componente padre llamado DashboardComponent con las siguientes secciones: Estadísticas y Configuración. Para poder cargar dentro de dicho componente la sección específica en la que haga clic el usuario, se deben usar rutas anidadas.
-
-Para llevar a cabo esto es necesario realizar la siguiente configuración:
-
-1. **Configuración del archivo app.routes.ts:**
-
-```tsx
-**#app.routes.ts**
-export const routes: Routes = [
-  {
-    path: 'dashboard',
-    component: DashboardComponent,
-    children: [
-      {
-        path: 'stats',
-        component: StatsComponent
-      },
-      {
-        path: 'configuration',
-        component: ConfigurationComponent
-      }
-    ]
-  }
-]
-```
-
-A la ruta del componente padre le hemos añadido dos rutas anidadas empleando la propiedad `children` el cual recibe un arreglo de rutas anidadas.
-
-1. **Configuración del controlador del componente DashboardComponent:**
-
-Será necesario importar en el decorador de nuestro componente los módulos de routing, tal y como hemos explicado en el ejemplo anterior:
-
-```tsx
-  imports: [CommonModule, **RouterOutlet, RouterLink**],
-```
-
-1. **Configuración de la plantilla del componente DashboardComponent:**
-
-```tsx
-<!-- dashboard.component.html -->
-<h1>Dashboard</h1>
-<nav>
-  <a routerLink="stats">Estadísticas</a> |
-  <a routerLink="settings">Configuración</a>
-</nav>
-
-<!-- Aquí se renderizarán los componentes hijos -->
-<router-outlet></router-outlet>
-```
-## 14.4. Redirección desde el controlador.
-
-Para poder realizar una redirección a una ruta específica desde el controlador de un componente es necesario usar el servicio Router, el cual, proporciona un conjunto de métodos para navegar entre rutas.
-
-Supongamos que tenemos un componente llamado LoginComponente que es el encargado de mostrar un formulario de inicio de sesión. En el caso de que el login del usuario sea correcto será necesario redirigir al usuario a la página principal. Para ello, realizaremos los siguientes pasos:
-
-1. **Inyectar el servicio Router en la clase/controlador del componente LoginComponent:**
-
-```
-export class LoginComponent {
-
-  **constructor(private routerService:Router){}**
-}
-
-```
-
-1. **Usar servicio Router:**
-
-```tsx
-export class LoginComponent {
-
-  constructor(private routerService:Router){}
-
-  login(){
-    //TODO: Comprobamos que el login es correcto
-
-    //Redirección sin parámetros
-    **this.routerService.navigate(['/home']);**
-  }
-```
-
-En el ejemplo anterior se realiza una redirección sin parámetros, pero también podría ser necesario redireccionar a una ruta usando algún parámetro. Para ello, debemos usar el servicio Router de la siguiente forma:
-
-```tsx
-this.router.navigate(['/taskform', taskId]);
-```
-
-
-## EJERCICIO 7: Creación y configuración de rutas.
-
-El objetivo del presente ejercicio es configurar las diferentes rutas de nuestra aplicación de gestión de tareas que que el usuario pueda acceder a toda la funcionalidad implementada en los diferentes componentes. Para ello, se deberán realizar los siguientes requisitos funcionales:
-
-- El sistema deberá contar con los siguientes nuevos componentes:
-    - src/app/componentes:
-        - /dashboard/profile
-        - /dashboard/stats
-    - src/app/pages
-        - /auth/login → ya lo tienes creado, solo tienes que moverlo de ubicación.
-        - /auth/singin → ya lo tienes creado, solo tienes que moverlo de ubicación.
-        - /home
-        - /tasks
-        - /dashboard
-        - /notfound
-        
-        La estructura de carpetas de tu proyecto deberá quedar así:
-        
-        ![pages-components-structure](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/pages-components-structure.png)
-        
-
-- El sistema deberá redirigir a los usuarios a los siguientes componentes según la ruta indicada:
-    - `/login` → LoginComponent
-    - `/singin`→ SinginComponent
-    - `/home`→ HomeComponent
-    - `/tasks` → TaskComponent
-    - `/dashboard` → DashboardComponent
-        - `/dashboard/stats`→ ruta anidada que muestra dentro del componente DashboardComponente el componente StatsComponentes.
-        - `/dashboard/profile` → ruta anidada que muestra dentro del componente DashboardComponente el componente ProfileComponent.
-    - `/notfound` → NotfoundComponent
-    - `/` → redirección a `/home`
-    - `**` → redirección a `/notfound`
-    
-    Nota: crea cada uno de los anteriores componentes en un nuevo contenedor ubicado en `/src/app/pages`
-    
-- Modifica las plantillas de los componentes anteriores para que muestren la siguiente información:
-    - `LoginComponent` → Debe mostrar un formulario de Bootstrap que contenga un campo Usuario y un campo Contraseña de tipo password.
-    - `SinginComponente` → Debe mostrar un formulario de Bootstrap que contenga los siguientes campos: Nombre, Apellidos, Email, Usuario, Contraseña, Confirma contraseña.
-    - `HomeComponente` → Debe mostrar los siguientes componentes en el siguiente orden: NavbarComponente, TaskResume, FooterComponent.
-    - `TaskComponent` → Debe mostrar los siguientes componentes en el siguiente orden: NavbarComponente,TaskformComponent, TasklistComponent, FooterComponent.
-    - `DasboardComponente` → Debe mostrar los siguientes componentes en el siguiente orden: NavbarComponente,<router-outlet>, FooterComponent.
-    - `NotFoundComponent` → Debe mostrar un mensaje de texto indicando que la ruta indicada no es válida.
-- El sistema deberá mostrar una barra de navegación cómo la siguiente y redirigir al usuario a la ruta según la opción seleccionada, usando para ello `routerLink`:
-    
-    ![navbar](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/navbar.png)
-    
-    Nota: para poder implementar un menú desplegable cómo se muestra en la imagen anterior puedes hacer uso del siguiente código proporcionado en la página de Bootstrap:[https://getbootstrap.com/docs/5.3/components/navbar/](https://getbootstrap.com/docs/5.3/components/navbar/)
-    
-    Ten en cuenta que tendrás que cambiar en tu archivo `angular.json` la siguiente línea de código:
-    
-    ```json
-                  "node_modules/bootstrap/dist/js/bootstrap.min.js"
-    ```
-    
-    por esta otra para que funcione correctamente la barra de navegación:
-    
-    ```json
-                  "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
-    ```
-    
 
 # 15. Servicios.
 
