@@ -194,55 +194,6 @@ En dispositivos medianos y más grandes estas columnas se mostrarán en una sola
 Realiza la instalación de Bootstrap y Bootstrap Icons en tu proyecto Planify y verifica que este funciona correctamente borrando todo el contenido del archivo app-component.html y añadiendo algún componente de Bootstrap.
 
 
-# 5. Interpolación.
-
-La interpolación es una técnica que se utiliza en Angular para enlazar datos desde el controlador a la vista o plantilla HTML, lo que nos permitirá mostrar valores de las propiedades de un componente de manera dinámica. 
-
-Para poder indicarle al framework que evalué una expresión de controlador usaremos dobles llaves {{ expresión }}
-
-Supongamos que tenemos una propiedad llamada nombre en el controlador de mi componente:
-
-```tsx
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-
-@Component({
-  selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
-})
-export class AppComponent {
-  title = '@joseprofeinformatica';
-}
-
-```
-
-En la plantilla interpolaremos el valor de title de la siguiente forma:
-
-```html
-<h1>{{title}}</h1>
-```
-
-Al ejecutar este código, el navegador renderizará así:
-
-![Interpolation](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/interpolation.png)
-
-## Características de la interpolación:
-
-- Permite evaluar expresiones simples de TypeScript:
-    
-    ```html
-    <p>El año es: {{ 2024 }}</p>
-    <p>La suma es: {{ 2 + 3 }}</p>
-    ```
-    
-- Permite realizar llamadas a métodos:
-    
-    ```html
-    <p>Mensaje: {{ obtenerMensaje() }}</p>
-    ```
-    
 
 # 6. Componentes.
 
@@ -304,6 +255,7 @@ que conformarán nuestra aplicación Planify y que iremos desarrollando en futur
 ```bash 
 ng generate component components/navbar
 ```
+- `home/` → componente que contendrá la pantalla inicial de la aplicación.
 
 - `footer/` → componente que contendrá el footer de nuestra aplicación.
 
@@ -324,51 +276,220 @@ ng generate component components/navbar
 El resultado tras la creación de los componentes debe ser el siguiente:
 
 
-![Estructura](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/reto-componentes.png)
+![EstructuraComponentes](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/reto-estructura-componentes.png)
+
 
 ### Reto 4. Configurando el Navbar y Footer.
 
-Modifica la plantilla de los componentes `navbar` y añade una barra de navegación de Bootstrap. Modifica el HTML del componente de Bootstrap, cambia el nombre de la appa y añade las siguientes opciones al menú:
+Modifica la plantilla de los componentes `navbar` y añade una barra de navegación de Bootstrap. Modifica el HTML del componente de Bootstrap, cambia el nombre de la app y añade las siguientes opciones al menú:
  - Home
  - Tasks
  - Dashboard
+ - Signin
+ - Login
+ - Logout
 
 Modifica la plantilla del componente `footer` y añade un pie de página de bootstrap.
 
-Una vez modificada la plantilla de ambos componentes, importalos en el componente principal `app-component.`
+Una vez modificada la plantilla de ambos componentes, importalos en el componente principal `app-component.`. Añade también en medio de ambos componentes el Home. La estructura de componentes deberá quedar así:
+
+![OrganizacionComponentes](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/reto-organizacion-componentes.png)
+
 
 
 Tras realizar este reto nuestra aplicación debe tener el siguiente aspecto:
 
 ![NavbarFooter](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/reto-navbar-footer.png)
 
+## 6.2. Ciclo de vida de un componente.
 
-# 7. Sintaxis de la plantilla.
+Como hemos visto en los apartados anteriores los componentes son una parte de la aplicación que estamos construyendo. Por ejemplo, en Planify, vamos a desarrollar diferentes componentes: 
+- TaskListComponent: componente que se encargará de mostrar el listado de tareas.
+- TaskFormComponent: componente que se encargará de mostrar el formulario para añadir nuevas tareas.
+- NavbarComponent: contiene toda la lógica de la barra de navegación
+...
 
-En angular una plantilla es un fragmento de HTML. Sin embargo, dentro de esta se puede usar una sintaxis especial que permitirá añadirle un comportamiento dinámico a nuestra plantilla. Para emplear esta sintaxis especial se usará el carácter `@` .
+Cada uno de estos componentes nace, cambia y muere durante la ejecución de nuestra aplicación.
+
+### ¿Qué es el ciclo de vida de un componente?
+
+El ciclo de vida de un componente es el conjunto de etapas que atraviesa un componentes desde que se crea hasta que se destruye. Angular nos permite intervenir en cada una de estas etapas mediante métodos especiales denominados **hooks del ciclo de vida**, los cuales Angular activa automáticamente en momentos claves.
+
+### Etapas principales de un componente.
+
+| Etapa | Método | Cuándo se ejecuta | Qué hace |
+|-----------|-----------|----------------------|--------------|
+| **Creación** | `constructor()` | Cuando Angular crea la instancia del componente | Se inicializan variables e inyectan dependencias. No se debe acceder aún al DOM ni a datos de entrada (`@Input`). |
+| **Inicialización** | `ngOnInit()` | Una vez creada la vista y cargados los datos de entrada. Se ejecuta una sola vez. | Se inicializan datos, se hacen peticiones HTTP y se preparan suscripciones. |
+| **Cambios en datos de entrada** | `ngOnChanges(changes: SimpleChanges)` | Cada vez que cambia un valor de entrada (`@Input`) | Permite reaccionar ante cambios en propiedades que el componente recibe de su padre. |
+| **Detección de cambios** | `ngDoCheck()` | Cada vez que Angular ejecuta el detector de cambios. | Permite detectar cambios más profundos. |
+| **Renderizado de la vista** | `ngAfterViewInit()` | Cuando la vista y los elementos hijos (`@ViewChild`) ya se han renderizado | Ideal para acceder al DOM o manipular elementos ya cargados en pantalla. |
+| **Destrucción** | `ngOnDestroy()` | Justo antes de que Angular elimine el componente de la vista. Angular destruye un componente cuando ya no se muestra en la página. | Se liberan recursos como suscripciones a observables. |
+
+![CicloComponente](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/ciclo-componente.png)
+
+
+### Implementación
+
+Para poder implementar los hooks es necesario que la clase del componente implemente a la interfaz de dicho hook y realizar la implementación del método correspondiente. Es muy importante destacar que el constructor no forma parte de los hooks del ciclo de vida de un componente. Un uso muy adecuado de los constructores es inyectar servicios.
+
+  En el siguiente fragmento de código se muestra un ejemplo:
+
+```typescript
+export class TaskListComponent implements OnInit, OnDestroy {
+  tasks: Task[] = [];
+  subscription: any;
+
+  constructor(private taskService: TaskService) {
+    console.log('Constructor: componente creado');
+  }
+
+  ngOnInit() {
+    console.log('ngOnInit: cargando tareas...');
+    this.subscription = this.taskService.getTasks().subscribe(data => {
+      this.tasks = data;
+    });
+  }
+
+  ngOnDestroy() {
+    console.log('ngOnDestroy: limpiando recursos');
+    this.subscription.unsubscribe();
+  }
+}
+
+```
+
+## Reto: Prueba los ciclos del componente home.
+
+El objetivo de este reto es mostrar en consola el orden en el que Angular ejecuta los principales hooks del ciclo de vida del componente Home. Implementa todas las interfaces estudiadas y sus métodos y muestra por consola un mensaje que identifique cada una de las fases del ciclo de vida.
+
+# 7. Sintaxis de la plantilla(Template Syntax).
+
+En angular cada componente tiene una plantilla asociada dónde se visualizará la información de este. Estas plantillas son archivos .html en cuyo interior podemos encontrar código HTML, sin embargo, también se puede usar una sintaxis especial que permitirá añadirle un comportamiento dinámico a nuestra plantilla.
+
+La sintaxis de las plantillas nos permitirá vincular el HTML con la lógica del componente (TypeScript) creando una interfaz dinámica y reactiva.
+
+## 7.2. Interpolación.
+
+La interpolación es una técnica que se utiliza en Angular para enlazar datos desde el controlador a la vista o plantilla HTML, lo que nos permitirá mostrar valores de las propiedades de un componente de manera dinámica. 
+
+Para poder indicarle al framework que evalué una expresión de controlador usaremos dobles llaves ``{{ expresión }}``
+
+Supongamos que tenemos una propiedad llamada titulo en el controlador del componente Home:
+
+```tsx
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-home',
+  imports: [],
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.css'
+})
+export class HomeComponent {
+
+  title = '@joseprofeinformatica';
+
+}
+
+```
+
+En la plantilla interpolaremos el valor de title de la siguiente forma:
+
+```html
+<h1>Hola! {{title}}</h1>
+```
+
+Al ejecutar este código, el navegador renderizará así:
+
+![Interpolation](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/interpolation.png)
+
+## Características de la interpolación:
+
+- Permite evaluar expresiones simples de TypeScript:
+    
+    ```html
+    <p>El año es: {{ 2024 }}</p>
+    <p>La suma es: {{ 2 + 3 }}</p>
+    ```
+    
+- Permite realizar llamadas a métodos:
+    
+    ```html
+    <p>Mensaje: {{ obtenerMensaje() }}</p>
+    ```
+
+## Directivas.
+
+Las directivas son instrucciones que le indican al framework cómo renderizar los diferentes elementos. Esto permitirá modificar la estructura del DOM: aplicar estilos, añadir comportamientos, realizar operaciones condicionales, etc.
+
+Las directivas se dividen en tres categorías:
+
+- Directivas Estructurales.
+- Directivas de Atributo.
+- Directivas Personalizadas.
+
+**IMPORTANTE!** Para poder emplear las directivas es necesario importar el módulo `CommonModule` en la clase del componente.
+
+Para explicar las directivas trabajaremos con un componente que tendrá la siguiente información:
 
 Dado el contenido del controlador:
 
 ```tsx
   edad = 40;
-  articulos = [{
-    codigo: 1,
-    descripcion: 'naranjas',
-    precio: 540
-  },{
-    codigo: 2,
-    descripcion: 'manzanas',
-    precio: 900
-  },{
-    codigo: 3,
-    descripcion: 'peras',
-    precio: 490
-  }];
+
+  esMayorEdad=true;
+
+  articulos = [
+  { codigo: 1, descripcion: 'naranjas', precio: 3 },
+  { codigo: 2, descripcion: 'manzanas', precio: 5 },
+  { codigo: 3, descripcion: 'peras', precio: 1 },
+  { codigo: 4, descripcion: 'plátanos', precio: 2 },
+  { codigo: 5, descripcion: 'kiwis', precio: 4 },
+  { codigo: 6, descripcion: 'uvas', precio: 3 },
+  ];
   
-   generarNumero() {
-    return Math.floor(Math.random() * 3) + 1;
+  numeroAleatorio(){
+    return Math.floor(Math.random()*3)+1;
   }
 ```
+
+## 8.1. Directivas estructurales:
+
+Son aquellas que cambian la estructura del DOM, es decir, añaden o eliminan elementos según una condición o una lógica determinada. Estas directivas se identifican por el prefijo `*` que indica que Angular debe manejar el DOM de forma especial.
+
+Ejemplos de directivas estructurales:
+
+- `*ngIf`: renderiza un elemento del DOM si se cumple una determinada expresión booleana.
+
+```html
+<p *ngIf="esMayorEdad">La persona es mayor de Edad</p>
+```
+
+- `*ngFor:` renderiza un conjunto de elementos de forma repetida en función de una colección de objetos.
+
+```html
+<table>
+<tr *ngFor="let articulo of articulos">
+   <td>{{articulo.codigo}}</td>
+    <td>{{articulo.descripcion}}</td>
+    <td>{{articulo.precio}}</td>
+</tr>
+</table>
+```
+
+- **`*ngSwitch`, `*ngSwitchCase`, y `*ngSwitchDefault`**: Permiten una lógica de control similar a `switch`, donde se evalúa una expresión y se muestra un bloque específico.
+
+```html
+<div [ngSwitch]="numeroAleatorio()">
+<p *ngSwitchCase="1">El numero es un 1</p>
+<p *ngSwitchCase="2">El numero es un 2</p>
+<p *ngSwitchDefault>El numero es un 3</p>
+</div>
+```
+
+## Nueva sintaxis para el flujo de control (New Control Flow Syntax).
+A partir de Angular 17 se introduce una nueva sintaxis para controlar el flujo de nuestros elementos. La principal diferencia es que no es necesario introducirlas dentro de ninguna etiqueta HTML y que usan el caracter `@`. A continuación se muestran varios ejemplos:
 
 - `@if` → nos permitirá controlar si se añadirán bloques de código HTML según si se cumple o no una determinada condición:
 
@@ -389,7 +510,9 @@ Dado el contenido del controlador:
       <td>{{articulo.descripcion}}</td>
       <td>{{articulo.precio}}</td>
     </tr>
-    }
+    }@empty {
+      <li> There are no items. </li>
+     }
 ```
 
 - `@switch/@case/@default` → nos permitirá mostrar una estructura de código u otra según la expresión evaluada, así como mostrar una estructura por defecto en el supuesto que no se cumpla ninguna condición. A continuación se muestra un ejemplo de cómo se evalúa la ejecución de una función que genera números aleatorios entre 1 y 3:
@@ -407,45 +530,41 @@ Dado el contenido del controlador:
     }
   }
 ```
+### ng-container
 
-# 8. Directivas.
+`<ng-container>` es un contenedor lógico que no se renderiza en el DOM.
+Sirve para agrupar elementos o aplicar directivas estructurales (*ngIf, *ngFor, @if, @for, etc.) sin añadir nodos extra al HTML.
 
-Las directivas son instrucciones que le indican al framework cómo renderizar los diferentes elementos. Esto permitirá modificar la estructura del DOM: aplicar estilos, añadir comportamientos, realizar operaciones condicionales, etc.
-
-Las directivas se dividen en tres categorías:
-
-- Directivas Estructurales.
-- Directivas de Atributo.
-- Directivas Personalizadas.
-
-Para poder emplear las directivas es necesario importar el módulo `CommonModule` en la clase del componente.
-
-## 8.1. Directivas estructurales:
-
-Son aquellas que cambian la estructura del DOM, es decir, añaden o eliminan elementos según una condición o una lógica determinada. Estas directivas se identifican por el prefijo `*` que indica que Angular debe manejar el DOM de forma especial.
-
-Ejemplos de directivas estructurales:
-
-- *ngIf: renderiza un elemento del DOM si se cumple una determinada expresión booleana.
+En el siguiente fragmento de código se ha tenido que añadir una etiqueta `<div>`,que se mostrará en el DOM, para controlar la visibilidad de un conjunto de subetiquetas en el DOM.
 
 ```html
-<p *ngIf="esMayorEdad">La persona es mayor de Edad</p>
-```
-
-- `*ngFor:` renderiza un conjunto de elementos de forma repetida en función de una colección de objetos.
-
-```html
-<li *ngFor="let item of items">{{ item }}</li>
-```
-
-- **`*ngSwitch`, `*ngSwitchCase`, y `*ngSwitchDefault`**: Permiten una lógica de control similar a `switch`, donde se evalúa una expresión y se muestra un bloque específico.
-
-```html
-<div [ngSwitch]="valor">
-<p *ngSwitchCase="opcion1">Caso 1</p>
-<p *ngSwitchCase="opcion2">Caso 2</p>
-<p *ngSwitchDefault>Caso predeterminado</p>
+<div *ngIf="usuario">
+  <h2>Bienvenido {{ usuario.nombre }}</h2>
+  <p>Tienes {{ usuario.mensajes }} mensajes.</p>
 </div>
+```
+
+Para evitar esta casuística se podría usar la etiqueta `<ng-container>`:
+
+```html
+<ng-container *ngIf="usuario">
+  <h2>Bienvenido {{ usuario.nombre }}</h2>
+  <p>Tienes {{ usuario.mensajes }} mensajes.</p>
+</ng-container>
+```
+### ng-template
+`<ng-template>` define un bloque de código HTML que Angular no renderiza de inmediato, sino que guarda como una plantilla, puediéndose controlar su visibilidad según determinadas acciones.
+
+En el siguiente ejemplo se muestra cómo se controla la visiblidad de un bloque de código HTML según si existe o no un usuario. Si el usuario existe se muestra el mensaje de bienvenida, de lo contrario, se muestra el contenido del `ng-template` llamado #noUsario.
+
+```html
+<ng-template #noUsuario>
+  <p>No hay usuario logueado.</p>
+</ng-template>
+
+<ng-container *ngIf="usuario; else noUsuario">
+  <p>Bienvenido {{ usuario.nombre }}!</p>
+</ng-container>
 ```
 
 ## 8.2. Directivas de atributo.
@@ -457,7 +576,9 @@ Ejemplos de directivas de atributo:
 - **`ngClass`**: Añade o elimina clases CSS en un elemento de acuerdo con una expresión.
 
 ```html
+
 <p [ngClass]="{'activo': esActivo, 'inactivo': !esActivo}">Texto con clases dinámicas.</p>
+
 ```
 
 - **`ngStyle`**: Cambia estilos en línea de un elemento basados en una expresión.
@@ -472,59 +593,12 @@ Ejemplos de directivas de atributo:
 <p [hidden]="ocultar">Este texto puede ocultarse.</p>
 ```
 
-## 8.3. Directivas personalizadas.
 
-Angular permite definir directivas personalizadas. Esto es útil para cuando se quiere implementar un comportamiento que será reutilizado en muchos componentes de nuestro proyecto.
+## Reto : Funcionalidad componente TaskList.
 
-A continuación se muestra cómo implementar una directiva que resaltará el texto de un elemento al hacer mouse hover y volverá a su estado normal con el mouse out.
+El objetivo del presente ejercicio consiste en implementar la funcionalidad básica del componente TaskListComponente, cuyo propósito es mostrar una tabla con las diferentes tareas que existen creadas en el sistema.
 
-1. Creamos la directiva usando AngularCLI
-
-```powershell
-ng generate directive directives/resaltar
-```
-
-1. Implementamos la funcionalidad de la clase que contiene la lógica de la directiva:
-
-```tsx
-import { Directive, ElementRef, HostListener, Input } from '@angular/core';
-
-@Directive({
-  selector: '[appResaltar]',
-  standalone: true
-})
-export class ResaltarDirective {
-  constructor(private ele: ElementRef) {
-  }
-
-  @HostListener('mouseenter') onMouseEnter() {
-    this.ele.nativeElement.style.color ='blue';
-  }
-  
-  @HostListener('mouseout') onMouseOut() {
-    this.ele.nativeElement.style.color ='red';
-  }
-}
-```
-
-1. Importamos la directiva en el componente:
-
-```powershell
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet,ResaltarDirective],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
-  
-})
-```
-
-## Ejercicio 3: Funcionalidad componente TaskList.
-
-El objetivo del presente ejercicio consiste en implementar la funcionalidad básica del componente tasklist, cuyo propósito es mostrar una tabla con las diferentes tareas que existen creadas en el sistema.
-
-Para poder trabajar con las tareas, lo primero que es necesario realizar es modelar un objeto `Task`que lo represente. Para ello, crea un archivo llamado `task.model.ts` en el directorio `src/app/models`dónde se implemente una clase llamada `Task` que contenga las siguientes propiedades:
+Para poder trabajar con las tareas, lo primero que es necesario realizar es modelar un objeto `Task`que la represente. Para ello, crea un archivo llamado `task.model.ts` en el directorio `src/app/models`dónde se implemente una clase llamada `Task` que contenga las siguientes propiedades:
 
 - `id`
 - `nombre`
@@ -533,15 +607,14 @@ Para poder trabajar con las tareas, lo primero que es necesario realizar es mode
 - `estado`que puede ser: Completada, En progreso y Pendiente.
 - `fecha de creación`
 - `fecha de expiración`
-- `isDelete`
 
-Inicializa, empleando el método `ngOnInit`, un listado de tareas tomando como referencia el objeto anteriormente definido.
+Declara una propiedad, en el componente TaskList, llamada `tareas` e incicializa un listado de tareas tomando como referencia el objeto anteriormente definido.
 
 Modifica el código HTML del componente `TaskList` y añade una tabla de bootstrap dónde se deberá mostrar las siguientes propiedades de cada tarea: nombre, descripción, prioridad, estado, fecha de expiración, acciones.
 
 **La tabla deberá cumplir los siguientes requisitos funcionales:**
 
-- Se deberá mostrar una fila con la información anteriormente mencionada de cada una de las tareas que han sido creadas en el controlador.
+- Se deberá mostrar una fila que actuará como encabezado con la información anteriormente mencionada de cada una de las tareas que han sido creadas en el controlador.
 - La celda que muestra la **prioridad** de cada una de las tareas deberá tener un fondo, aplicando para ello una clase concreta, según su valor:
     - Si la prioridad es Baja → class=”table-success”
     - Si la prioridad es Media → class=”table-warning”
@@ -567,6 +640,10 @@ A continuación se muestra un ejemplo del resultado final de la tabla mostrada p
 ![TaskList Component](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/tasklist-component.png)
 
 **Ampliación**: si visualizamos nuestra aplicación en un dispositivo móvil podemos observar cómo la tabla que hemos implementado en nuestra aplicación no se adapta adecuadamente al tamaño de la pantalla. Busca en la documentación oficial de Bootstrap, algún otro componente que te permita mostrar el listado de tareas de manera responsivo. Piensa cómo lo mostrarías en una aplicación Android.
+
+## Reto: Información si no existen tareas.
+
+Utilizando la etiqueta `ng-template` crea un bloque de código HTML que muestre un mensaje informando que no existen tareas creadas si el array de tareas del controlador está vacío. De lo contrario, se deberá mostrar la tabla de tareas.
 
 # 9. Event Binding.
 
@@ -660,18 +737,6 @@ capturarElemento(event: Event) {
 }
 ```
 
-### Ejercicio contador:
-
-Tu objetivo es desarrollar un componente en Angular que funcione como un contador. Este componente debe hacer lo siguiente:
-
-1. **Mostrar un Texto**: Debe mostrar un número en la pantalla, que inicialmente será 0.
-2. **Incluir Dos Botones**:
-    - Un botón que incremente el número en 1 cada vez que se haga clic en él.
-    - Un botón que decrete el número en 1 cada vez que se haga clic en él.
-3. **Comportamiento Esperado**:
-    - Cuando el usuario haga clic en el botón de "Incrementar", el número mostrado debe aumentar en 1.
-    - Cuando el usuario haga clic en el botón de "Decrementar", el número mostrado debe disminuir en 1.
-
 ### Ejercicio:
 
 Tu objetivo es desarrollar un componente en Angular que funcione como un contador. Este componente debe hacer lo siguiente:
@@ -684,7 +749,7 @@ Tu objetivo es desarrollar un componente en Angular que funcione como un contado
     - Cuando el usuario haga clic en el botón de "Incrementar", el número mostrado debe aumentar en 1.
     - Cuando el usuario haga clic en el botón de "Decrementar", el número mostrado debe disminuir en 1.
 
-## Ejercicio 4. Funcionalidad iconos tasklist.
+## Reto. Funcionalidad iconos tasklist.
 
 Implementa las siguientes funcionalidad a los iconos añadidos en la tabla del componente `tasklist` :
 
@@ -702,7 +767,7 @@ Implementa las siguientes funcionalidad a los iconos añadidos en la tabla del c
 
 # 10. Property Binding.
 
-El property binding o enlace de propiedades es una técnica que nos permitirá enlazar las propiedades del controlador con las propiedades del DOM. Esto significa que podremos vinucar datos del controlador a las propiedades de un elemento HTML, lo que permite que el DOM se actualice cuando se actualice automáticamente los datos del controlador.
+El property binding o enlace de propiedades es una técnica que nos permitirá enlazar las propiedades del controlador con las propiedades del DOM. Esto significa que podremos vincular datos del controlador a las propiedades de un elemento HTML, lo que permite que el DOM se actualice cuando se actualice automáticamente los datos del controlador.
 
 El property binding se utiliza en la plantilla HTML empleando la sintaxis de corchetes `[]` . La expresión dentro del corchete se evalúa y el valor resultante se asigna a la propiedad del elemento del DOM correspondiente.
 
@@ -730,7 +795,7 @@ export class AppComponent {
 ```
 
 ```html
-<!-- archivo: app.component.html -->
+<!-- archivo: app.component.html -->V
 <h1 [textContent]="titulo"></h1> <!-- Binding a la propiedad textContent -->
 <img [src]="imagenUrl" alt="Descripción de la imagen"> <!-- Binding a la propiedad src -->
 <button [disabled]="!habilitarBoton">Enviar</button> <!-- Binding a la propiedad disabled -->
