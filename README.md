@@ -165,7 +165,7 @@ Una vez instalado el módulo de node, tenemos que indicarle a Angular dónde se 
   "node_modules/bootstrap-icons/font/bootstrap-icons.min.css"
 ],
 "scripts": [
-   "node_modules/bootstrap/dist/js/bootstrap.min.js"
+  "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
 ]
 ```
 
