@@ -969,13 +969,17 @@ Por último, para poder visualizar la opción seleccionada, se ha modificado la 
 ```
 
 
-### EJERCICIO 5: Comunicación entre componentes.
+### RETO: Comunicación entre componentes.
 
-El objetivo de esta tarea consiste en extraer del componente TaskListComponente toda la funcionalidad relacionada con mostrar información de una tarea en concreto, así como las acciones que se pueden realizar sobre dicha tarea. El objetivo de extraer al componente TaskResume esta funcionalidad es poder reutilizarla en la pestaña de Inicio. 
+Para darle un aspecto más profesional a nuestra aplicación se ha decidido cambiar la tabla usada para listar las diferentes tareas del usuario por tarjetas. Para ello, vamos se deberá modificar el componente `task-resume` para que reciba una tarea como dato de entrada pudiendo así mostrar toda su información en la tarjeta.
+
+Para poder visualizar las tarjetas de cada tarea, será necesario modificar el componente `task-list` para que inyecte en su HTML el componente `<app-task-list></app-task-list>` para cada una de las tareas.
+
+Por último, será necesario implementar la lógica de las acciones relacionadas con la tarea (borrar,subir prioridad, bajar prioridad, cambiar estado). Para ello, será necesario comunicarse con el componente padre e indicarle a este la modificación que se desea realizar sobre la tarea en cuestión, ya que es el encargado de gestionar el listado de tareas.
 
 A continuación se muestra cómo se deberán organizar los diferentes componentes:
 
-![Task List Structure](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/tasklist-structure.png)
+![Task List Structure](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/tasklist-structure.png)
 
 **Requisitos funcionales:**
 
@@ -985,27 +989,26 @@ A continuación se muestra cómo se deberán organizar los diferentes componente
     - Debe implementar los mecanismos de comunicación necesarios para actualizar la lista de Tareas cuando se realice alguna acción en el componente hijo TaskResume.
 - Componente TaskResume:
     - Debe implementar los mecanismos de comunicación necesarios para que reciba un objeto tarea del componente padre y muestre la información de dicho objeto en la plantilla.
-    - Debe implementar los mecanismos de comunicación
+    - Debe implementar los mecanismos de comunicación necesarios para informar al componente padre de los eventos que se desea realizar en una tarea concreta.
 
 # 14. Routing.
 
 Angular cuenta con un módulo encargado de gestionar las rutas de nuestra aplicación, decidiendo qué pantalla cargar en cada momento. Mediante Routing nuestra aplicación se comportará como una SPA (Single Page Application), donde no se realizan recargas completas del navegador.
 
-Imaginemos que tenemos una aplicación para gestionar tareas, algunas de las posibles rutas de nuestra aplicación pueden ser:
+Tomando como referencia nuestra app Planify, algunas de las posibles rutas de nuestra aplicación pueden ser:
 
 - [http://localhost:4200/](http://localhost:4200/)login
 - [http://localhost:4200/](http://localhost:4200/)singin
 - [http://localhost:4200/](http://localhost:4200/)home
 - [http://localhost:4200/](http://localhost:4200/)tasks
+- [http://localhost:4200/](http://localhost:4200/)new
+- [http://localhost:4200/](http://localhost:4200/)edit/{id}
 - [http://localhost:4200/](http://localhost:4200/)dashboard
-- [http://localhost:4200/](http://localhost:4200/)dashboard/profile
-- [http://localhost:4200/](http://localhost:4200/)dashboard/stats
 
-Cada vez que se acceda a algunas de las anteriores rutas Angular cargará un componente específico, el que configuremos. 
 
-Antes de comenzar a trabajar con rutas en Angular es necesario comprobar que nuestro proyecto tiene habilitado el routing. Esto ha sido indicado durante la creación del proyecto `ng new` .
+Cada vez que se acceda a algunas de las anteriores rutas Angular cargará un componente específico.
 
-Lo ideal sería contar con un componente dedicado para cada una de las rutas de primer nivel, es decir, siguiendo con el ejemplo anterior deberíamos tener los siguientes componentes: `login, singin, home, tasks, profile, stats`. Estos componentes los crearemos dentro del directorio `src/app/pages`. 
+Lo ideal sería contar con un componente dedicado para cada una de las rutas de primer nivel, es decir, siguiendo con el ejemplo anterior deberíamos tener los siguientes componentes: `login, singin, home, tasks, new, dashboard`. Estos componentes los crearemos dentro del directorio `src/app/pages`. 
 
 ![pages-structure](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/pages-structure.png)
 
@@ -1018,7 +1021,7 @@ Cada uno de estos componentes serán inyectados en el componente principal de nu
 
 Fuente: [https://www.ganatan.com/tutorials/routing-with-angular](https://www.ganatan.com/tutorials/routing-with-angular)
 
-## 14.1. Configuración de Rutas simples.
+## 14.1. Configuración de rutas simples.
 
 1. **Modificación del archivo `src/app/app.routes.ts` :**
     
@@ -1026,12 +1029,7 @@ Fuente: [https://www.ganatan.com/tutorials/routing-with-angular](https://www.gan
     
     ```tsx
     //app.routes.ts
-    import { Routes } from '@angular/router';
-    import { AppComponent } from './app.component';
-    import { HomeComponent} from './pages/general/home/home.component';
-    import { LoginComponent} from './pages/general/login/login.component';
-    import { NotFoundComponent} from './pages/general/notfound/notfound.component';
-    
+
     export const routes: Routes = [
         {path:'home', component:HomeComponent},
         {path:'login', component:LoginComponent},
@@ -1051,10 +1049,6 @@ Fuente: [https://www.ganatan.com/tutorials/routing-with-angular](https://www.gan
 
 ```tsx
 //app.component.ts
-
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -1082,11 +1076,24 @@ Para que un hipervínculo use una ruta configurada en el routing de nuestra apli
 
 Es importante que dicha plantilla cuente con la etiqueta `<router-outlet />` ya que será aquí dónde se inyecten los componentes asociados a la ruta en la que haga clic el usuario, por ejemplo, el componente `/home` o `/profile`, en el caso anterior.
 
+## RETO: Configuración rutas simples de Planify
+El objetivo de este reto es realizar la configuración de las diferentes rutas simples de la aplicación Planify. Concretamente, se deberán configurar las siguientes rutas en el archivo app.routes.ts:
+
+- /home -> HomeComponent
+- /tasks -> TasksComponent
+- /dashboard -> DashboardComponent
+- /login -> LoginComponent
+- /singin -> SinginComponent
+- /new -> TaskFormComponent
+
+
+Realiza las configuraciones necesarias para que cuando se haga clic en algunas opciones del menu se muestre el componente asociado a cada ruta en el componente principal `app.component`
+
 ## 14.2. Configuración de rutas con parámetros.
 
 Angular también permite que se pase algún parámetro en la ruta para que pueda ser recuperado desde el controlador y modificar la lógica del componente asociado a dicha ruta según el valor del parámetro recibido.
 
-Por ejemplo, nuestra aplicación sobre gestión de tareas puede tener una ruta que sea la siguiente [http://localhost:4200/task/323](http://localhost:4200/articulos/323) que nos permita modificar una tarea en concreto, en este caso, la tareas con identificador 323. 
+Por ejemplo, nuestra aplicación sobre gestión de tareas puede tener una ruta que sea la siguiente [http://localhost:4200/edit/323](http://localhost:4200/edit/323) que nos permita modificar una tarea en concreto, en este caso, la tareas con identificador 323. 
 
 Para lograr esto, será necesario modificar el componente asociado a la ruta /task para capturar el valor del parámetro pasado y el archivo app.routes.ts para indicarle que dicha ruta recibirá un parámetro.
 
@@ -1094,10 +1101,9 @@ Para lograr esto, será necesario modificar el componente asociado a la ruta /ta
 
 ```tsx
 //app.routes.ts
-export const routes: Routes = [{
-  path: "task/:id",
-  component: TaskComponent
-}];
+export const routes: Routes = [
+{path: "task/:id", component: TaskComponent}
+];
 ```
 
 En el código anterior hemos definido el path y mediante `:id` hemos indicado que el primer parámetro tendrá el identificador `id` 
@@ -1125,6 +1131,13 @@ export class TaskformComponent implements OnInit{
 Mediante el código anterior hemos obtenido una ruta con la que operaremos usando la implementación del ngOnInit (función que se ejecuta justo después de recibir todos los parámetros y antes de renderizar la plantilla). 
 
 Dentro de ngOnInit() nos estamos suscribiendo a los parámetros de nuestra ruta, lo que nos permitirá reaccionar a cambios dinámicos si la ruta cambia sin necesidad de recargar la página.
+
+## RETO: Configuración rutas con parametros de Planify
+El objetivo de este reto es realizar la configuración de las diferentes rutas con parámetros de la aplicación Planify. Concretamente, se deberán configurar las siguientes rutas en el archivo app.routes.ts:
+
+- /edit/:id -> TaskFormComponent
+
+Realiza las configuraciones necesarias para que cuando se haga clic en el botón `Editar` de una tarea se acceda al component TaskformComponent y se le pase como parámetro el identificador de la tarea que se desea editar. Muestra en una etiqueta HTML del componente `task-form` el identificador pasado como parámetro en la URL.
 
 ## 14.3. Rutas anidadas.
 
@@ -1179,6 +1192,13 @@ Será necesario importar en el decorador de nuestro componente los módulos de r
 <!-- Aquí se renderizarán los componentes hijos -->
 <router-outlet></router-outlet>
 ```
+
+## RETO: Configuración rutas anidadas en Planify.
+
+El objetivo de este reto es configurar dos rutas anidadas a la ruta '/dashboard' para que en el componente asociado a esta ruta, `DashboardComponent` se muestre uno de los siguientes componentes hijos:
+- Ruta `/dashboard/profile`: Se debe mostrar el componente hijo `ProfileComponent`
+- Ruta `/dashboard/stats`: Se debe mostrar el componente hijo `StatsComponent`
+
 ## 14.4. Redirección desde el controlador.
 
 Para poder realizar una redirección a una ruta específica desde el controlador de un componente es necesario usar el servicio Router, el cual, proporciona un conjunto de métodos para navegar entre rutas.
