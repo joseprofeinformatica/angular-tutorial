@@ -47,7 +47,7 @@ ng serve
 
 Desde este momento todos los cambios que realicemos en nuestra aplicación se desplegarán de manera automática en el servidor.
 
-## Reto 1. Creación del proyecto Planify
+## RETO. Creación del proyecto Planify
 Crea la estructura base del proyecto Planify. Configura correctamente el entorno seleccionando el preprocesador CSS para el estilo de la aplicación y desactivando el SSR. Sube tu proyecto a GitHub para poder gestionar correctamente el control de cambios.
 
 # 3. Estructura de un proyecto Angular
@@ -189,19 +189,19 @@ En este ejemplo las columnas se dividen en partes iguales de 4 columnas cada una
 
 En dispositivos medianos y más grandes estas columnas se mostrarán en una sola fila. En dispositivos más pequeños se ajustarán automáticamente en filas de una sola columna.
 
-## Reto 2: Instalación de Bootstrap.
+## RETO: Instalación de Bootstrap.
 
 Realiza la instalación de Bootstrap y Bootstrap Icons en tu proyecto Planify y verifica que este funciona correctamente borrando todo el contenido del archivo app-component.html y añadiendo algún componente de Bootstrap.
 
 
 
-# 6. Componentes.
+# 5. Componentes.
 
 En Angular un componente es una de las piezas fundamentales de la aplicación. Los componentes son bloques de funcionalidades independientes y reutilizables que controlan una parte de la interfaz gráfica de usuario. Como hemos mencionado anteriormente, cada componente tiene su controlador, su plantilla HTML, su hoja de estilos y su archivo de pruebas.
 
 Toda aplicación en Angular cuenta con un componente principal AppComponent, desde donde arranca la aplicación. Sin embargo, se pueden añadir nuevos componentes.
 
-## 6.1. Creación e importación de componentes.
+## 5.1. Creación e importación de componentes.
 
 La forma más sencilla que tenemos de crear un componente es usando la consola de Angular, mediante el siguiente comando:
 
@@ -244,7 +244,7 @@ Para poder usar este componente en nuestro proyecto, primeramente, será necesar
 app-navbar></app-navbar>
 ```
 
-### Reto 3. Creación de los componentes de Planify.
+### RETO. Creación de los componentes de Planify.
 
 El objetivo de este reto es comenzar a crear los diferentes componentes
 que conformarán nuestra aplicación Planify y que iremos desarrollando en futuros retos. Para ello, será necesario crear la siguiente estructura de componentes:
@@ -301,7 +301,7 @@ Tras realizar este reto nuestra aplicación debe tener el siguiente aspecto:
 
 ![NavbarFooter](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/reto-navbar-footer.png)
 
-## 6.2. Ciclo de vida de un componente.
+## 5.2. Ciclo de vida de un componente.
 
 Como hemos visto en los apartados anteriores los componentes son una parte de la aplicación que estamos construyendo. Por ejemplo, en Planify, vamos a desarrollar diferentes componentes: 
 - TaskListComponent: componente que se encargará de mostrar el listado de tareas.
@@ -363,13 +363,13 @@ export class TaskListComponent implements OnInit, OnDestroy {
 
 El objetivo de este reto es mostrar en consola el orden en el que Angular ejecuta los principales hooks del ciclo de vida del componente Home. Implementa todas las interfaces estudiadas y sus métodos y muestra por consola un mensaje que identifique cada una de las fases del ciclo de vida.
 
-# 7. Sintaxis de la plantilla(Template Syntax).
+# 6. Sintaxis de la plantilla(Template Syntax).
 
 En angular cada componente tiene una plantilla asociada dónde se visualizará la información de este. Estas plantillas son archivos .html en cuyo interior podemos encontrar código HTML, sin embargo, también se puede usar una sintaxis especial que permitirá añadirle un comportamiento dinámico a nuestra plantilla.
 
 La sintaxis de las plantillas nos permitirá vincular el HTML con la lógica del componente (TypeScript) creando una interfaz dinámica y reactiva.
 
-## 7.2. Interpolación.
+## 6.1. Interpolación.
 
 La interpolación es una técnica que se utiliza en Angular para enlazar datos desde el controlador a la vista o plantilla HTML, lo que nos permitirá mostrar valores de las propiedades de un componente de manera dinámica. 
 
@@ -404,7 +404,7 @@ Al ejecutar este código, el navegador renderizará así:
 
 ![Interpolation](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/interpolation.png)
 
-## Características de la interpolación:
+### 6.1.1. Características de la interpolación:
 
 - Permite evaluar expresiones simples de TypeScript:
     
@@ -419,7 +419,7 @@ Al ejecutar este código, el navegador renderizará así:
     <p>Mensaje: {{ obtenerMensaje() }}</p>
     ```
 
-## Directivas.
+## 6.3. Directivas.
 
 Las directivas son instrucciones que le indican al framework cómo renderizar los diferentes elementos. Esto permitirá modificar la estructura del DOM: aplicar estilos, añadir comportamientos, realizar operaciones condicionales, etc.
 
@@ -454,7 +454,7 @@ Dado el contenido del controlador:
   }
 ```
 
-## 8.1. Directivas estructurales:
+### 6.3.1. Directivas estructurales:
 
 Son aquellas que cambian la estructura del DOM, es decir, añaden o eliminan elementos según una condición o una lógica determinada. Estas directivas se identifican por el prefijo `*` que indica que Angular debe manejar el DOM de forma especial.
 
@@ -488,7 +488,7 @@ Ejemplos de directivas estructurales:
 </div>
 ```
 
-## Nueva sintaxis para el flujo de control (New Control Flow Syntax).
+### 6.3.2. Nueva sintaxis para el flujo de control (New Control Flow Syntax).
 A partir de Angular 17 se introduce una nueva sintaxis para controlar el flujo de nuestros elementos. La principal diferencia es que no es necesario introducirlas dentro de ninguna etiqueta HTML y que usan el caracter `@`. A continuación se muestran varios ejemplos:
 
 - `@if` → nos permitirá controlar si se añadirán bloques de código HTML según si se cumple o no una determinada condición:
@@ -530,7 +530,7 @@ A partir de Angular 17 se introduce una nueva sintaxis para controlar el flujo d
     }
   }
 ```
-### ng-container
+### 6.3.3 `ng-container`
 
 `<ng-container>` es un contenedor lógico que no se renderiza en el DOM.
 Sirve para agrupar elementos o aplicar directivas estructurales (*ngIf, *ngFor, @if, @for, etc.) sin añadir nodos extra al HTML.
@@ -552,7 +552,7 @@ Para evitar esta casuística se podría usar la etiqueta `<ng-container>`:
   <p>Tienes {{ usuario.mensajes }} mensajes.</p>
 </ng-container>
 ```
-### ng-template
+### 6.3.4 `ng-template`
 `<ng-template>` define un bloque de código HTML que Angular no renderiza de inmediato, sino que guarda como una plantilla, puediéndose controlar su visibilidad según determinadas acciones.
 
 En el siguiente ejemplo se muestra cómo se controla la visiblidad de un bloque de código HTML según si existe o no un usuario. Si el usuario existe se muestra el mensaje de bienvenida, de lo contrario, se muestra el contenido del `ng-template` llamado #noUsario.
@@ -567,7 +567,7 @@ En el siguiente ejemplo se muestra cómo se controla la visiblidad de un bloque 
 </ng-container>
 ```
 
-## 8.2. Directivas de atributo.
+### 6.3.5. Directivas de atributo.
 
 Son aquellas que modifican la apariencia o el comportamiento de un elemento en el DOM. A diferencia de las directivas estructurales no cambian la estructura del DOM.
 
@@ -645,7 +645,7 @@ A continuación se muestra un ejemplo del resultado final de la tabla mostrada p
 
 Utilizando la etiqueta `ng-template` crea un bloque de código HTML que muestre un mensaje informando que no existen tareas creadas si el array de tareas del controlador está vacío. De lo contrario, se deberá mostrar la tabla de tareas.
 
-# 9. Event Binding.
+# 7. Event Binding.
 
 Angular permite enlazar eventos del DOM a métodos o funciones del componentes. Para enlazar eventos se usa la sintaxis `(evento)=”accion()”` en la etiqueta del elemento en cuestión al que queremos enlazar dicho evento.
 
@@ -664,7 +664,7 @@ Angular permite enlazar eventos del DOM a métodos o funciones del componentes. 
     - `input`: Se dispara cuando el valor de un elemento de entrada se modifica (incluye el evento `keyup`).
 - accion() → método del controlador que se ejecutará cuando se capture el evento.
 
-## 9.1. Ejemplo de cómo capturar un evento click:
+## 7.1. Ejemplo de cómo capturar un evento click:
 
 ```tsx
 // app.component.ts
@@ -692,7 +692,7 @@ export class AppComponent {
 
 Cuando el usuario hace clic en el botón, el método mostrarMensaje() se ejecuta y cambia el valor de mensaje, que luego se muestra en la vista.
 
-## 9.2. Ejemplo de cómo capturar un evento de teclado keyup:
+## 7.2. Ejemplo de cómo capturar un evento de teclado keyup:
 
 ```tsx
 // app.component.ts
@@ -719,7 +719,7 @@ export class AppComponent {
 <p>{{ mensaje }}</p>
 ```
 
-## 9.3. Obtener el elemento que ha desencadenado el evento.
+## 7.3. Obtener el elemento que ha desencadenado el evento.
 
 En Angular, puedes capturar el elemento que ha desencadenado un evento pasándole el objeto $event al método del componente. Este objeto $event contiene información detallada sobre el evento, incluido el elemento DOM que fue clicado.
 
@@ -737,7 +737,7 @@ capturarElemento(event: Event) {
 }
 ```
 
-### Ejercicio:
+### Ejercicio: Contador de números
 
 Tu objetivo es desarrollar un componente en Angular que funcione como un contador. Este componente debe hacer lo siguiente:
 
@@ -969,7 +969,7 @@ Por último, para poder visualizar la opción seleccionada, se ha modificado la 
 ```
 
 
-### RETO: Comunicación entre componentes.
+## RETO: Comunicación entre componentes.
 
 Para darle un aspecto más profesional a nuestra aplicación se ha decidido cambiar la tabla usada para listar las diferentes tareas del usuario por tarjetas. Para ello, vamos se deberá modificar el componente `task-resume` para que reciba una tarea como dato de entrada pudiendo así mostrar toda su información en la tarjeta.
 
@@ -991,7 +991,7 @@ A continuación se muestra cómo se deberán organizar los diferentes componente
     - Debe implementar los mecanismos de comunicación necesarios para que reciba un objeto tarea del componente padre y muestre la información de dicho objeto en la plantilla.
     - Debe implementar los mecanismos de comunicación necesarios para informar al componente padre de los eventos que se desea realizar en una tarea concreta.
 
-# 14. Routing.
+# 12. Routing.
 
 Angular cuenta con un módulo encargado de gestionar las rutas de nuestra aplicación, decidiendo qué pantalla cargar en cada momento. Mediante Routing nuestra aplicación se comportará como una SPA (Single Page Application), donde no se realizan recargas completas del navegador.
 
@@ -1021,7 +1021,7 @@ Cada uno de estos componentes serán inyectados en el componente principal de nu
 
 Fuente: [https://www.ganatan.com/tutorials/routing-with-angular](https://www.ganatan.com/tutorials/routing-with-angular)
 
-## 14.1. Configuración de rutas simples.
+## 12.1. Configuración de rutas simples.
 
 1. **Modificación del archivo `src/app/app.routes.ts` :**
     
@@ -1087,9 +1087,23 @@ El objetivo de este reto es realizar la configuración de las diferentes rutas s
 - /new -> TaskFormComponent
 
 
-Realiza las configuraciones necesarias para que cuando se haga clic en algunas opciones del menu se muestre el componente asociado a cada ruta en el componente principal `app.component`
+Realiza las configuraciones necesarias para que cuando se haga clic en algunas opciones del menu se muestre el componente asociado a cada ruta en el componente principal `app.component`.
 
-## 14.2. Configuración de rutas con parámetros.
+Además, también será necesario realizar la configuración de los siguientes botones mostrados en las siguientes componentes:
+
+- Componente Tasklist:
+  - Botón `Crear tarea`: redirección a `/new`
+- Componente Taskresume:
+  - Botón `Editar`: redirección a `/edit/:idtarea`
+- Componente Stats:
+  - Botón `Nueva tarea`: redirección a `/new`
+- Componente Taskform:
+  - Botón `Cancelar`: redirección a `/tasks`
+- Componente Home:
+  - Botón `Comenzar`: redireccion a `/tasks`
+  - Botón `Iniciar sesión`: redirección a `/login`
+
+## 12.2. Configuración de rutas con parámetros.
 
 Angular también permite que se pase algún parámetro en la ruta para que pueda ser recuperado desde el controlador y modificar la lógica del componente asociado a dicha ruta según el valor del parámetro recibido.
 
@@ -1139,7 +1153,7 @@ El objetivo de este reto es realizar la configuración de las diferentes rutas c
 
 Realiza las configuraciones necesarias para que cuando se haga clic en el botón `Editar` de una tarea se acceda al component TaskformComponent y se le pase como parámetro el identificador de la tarea que se desea editar. Muestra en una etiqueta HTML del componente `task-form` el identificador pasado como parámetro en la URL.
 
-## 14.3. Rutas anidadas.
+## 12.3. Rutas anidadas.
 
 Las rutas anidadas nos permitirán organizar los componentes de nuestra aplicación de manera jerárquica, lo que nos facilitará la construcción de aplicaciones complejas. Se suelen utilizar cuando un componente tiene sus propias subrutas para cargar componentes hijos dentro del componente padre de manera dinámica.
 
@@ -1176,7 +1190,7 @@ A la ruta del componente padre le hemos añadido dos rutas anidadas empleando la
 Será necesario importar en el decorador de nuestro componente los módulos de routing, tal y como hemos explicado en el ejemplo anterior:
 
 ```tsx
-  imports: [CommonModule, **RouterOutlet, RouterLink**],
+  imports: [CommonModule, RouterOutlet, RouterLink],
 ```
 
 1. **Configuración de la plantilla del componente DashboardComponent:**
@@ -1195,11 +1209,17 @@ Será necesario importar en el decorador de nuestro componente los módulos de r
 
 ## RETO: Configuración rutas anidadas en Planify.
 
-El objetivo de este reto es configurar dos rutas anidadas a la ruta '/dashboard' para que en el componente asociado a esta ruta, `DashboardComponent` se muestre uno de los siguientes componentes hijos:
+El objetivo de este reto es configurar dos rutas anidadas a la ruta '/dashboard' para que en el componente asociado a esta ruta, `DashboardComponent`, se muestre uno de los siguientes componentes hijos:
 - Ruta `/dashboard/profile`: Se debe mostrar el componente hijo `ProfileComponent`
 - Ruta `/dashboard/stats`: Se debe mostrar el componente hijo `StatsComponent`
 
-## 14.4. Redirección desde el controlador.
+El resultado debe ser el siguiente:
+![reto-rutas-anidadas1](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/reto-rutas-anidadas1.png)
+
+![reto-rutas-anidadas2](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/reto-rutas-anidadas2.png)
+
+
+## 12.4. Redirección desde el controlador.
 
 Para poder realizar una redirección a una ruta específica desde el controlador de un componente es necesario usar el servicio Router, el cual, proporciona un conjunto de métodos para navegar entre rutas.
 
@@ -1236,85 +1256,90 @@ En el ejemplo anterior se realiza una redirección sin parámetros, pero tambié
 this.router.navigate(['/taskform', taskId]);
 ```
 
+## RETO: Redirección desde el controlador.
 
-## EJERCICIO 7: Creación y configuración de rutas.
+El objetivo de este reto consiste en realizar una redirección a una ruta desde el controlador. En Planify existen varios botones que al ser pulsados primeramente realizarán una acción y posteriormente si todo es correcto realizará una redirección a una ruta de la aplicación. Algunos de estos botones son:
 
-El objetivo del presente ejercicio es configurar las diferentes rutas de nuestra aplicación de gestión de tareas que que el usuario pueda acceder a toda la funcionalidad implementada en los diferentes componentes. Para ello, se deberán realizar los siguientes requisitos funcionales:
+- Componente Login:
+  - Botón `Entrar`: tras ser pulsado y comprobar que el usuario y la contraseña es correcto redirigirá a la ruta `/tasks`.
+- Componente Singin:
+  - Botón `Registrarse`: tras verificar que los datos introducidos en el formulario son correctos redirigirá a la ruta `/tasks`.
 
-- El sistema deberá contar con los siguientes nuevos componentes:
-    - src/app/componentes:
-        - /dashboard/profile
-        - /dashboard/stats
-    - src/app/pages
-        - /auth/login → ya lo tienes creado, solo tienes que moverlo de ubicación.
-        - /auth/singin → ya lo tienes creado, solo tienes que moverlo de ubicación.
-        - /home
-        - /tasks
-        - /dashboard
-        - /notfound
-        
-        La estructura de carpetas de tu proyecto deberá quedar así:
-        
-        ![pages-components-structure](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/pages-components-structure.png)
-        
 
-- El sistema deberá redirigir a los usuarios a los siguientes componentes según la ruta indicada:
-    - `/login` → LoginComponent
-    - `/singin`→ SinginComponent
-    - `/home`→ HomeComponent
-    - `/tasks` → TaskComponent
-    - `/dashboard` → DashboardComponent
-        - `/dashboard/stats`→ ruta anidada que muestra dentro del componente DashboardComponente el componente StatsComponentes.
-        - `/dashboard/profile` → ruta anidada que muestra dentro del componente DashboardComponente el componente ProfileComponent.
-    - `/notfound` → NotfoundComponent
-    - `/` → redirección a `/home`
-    - `**` → redirección a `/notfound`
-    
-    Nota: crea cada uno de los anteriores componentes en un nuevo contenedor ubicado en `/src/app/pages`
-    
-- Modifica las plantillas de los componentes anteriores para que muestren la siguiente información:
-    - `LoginComponent` → Debe mostrar un formulario de Bootstrap que contenga un campo Usuario y un campo Contraseña de tipo password.
-    - `SinginComponente` → Debe mostrar un formulario de Bootstrap que contenga los siguientes campos: Nombre, Apellidos, Email, Usuario, Contraseña, Confirma contraseña.
-    - `HomeComponente` → Debe mostrar los siguientes componentes en el siguiente orden: NavbarComponente, TaskResume, FooterComponent.
-    - `TaskComponent` → Debe mostrar los siguientes componentes en el siguiente orden: NavbarComponente,TaskformComponent, TasklistComponent, FooterComponent.
-    - `DasboardComponente` → Debe mostrar los siguientes componentes en el siguiente orden: NavbarComponente,<router-outlet>, FooterComponent.
-    - `NotFoundComponent` → Debe mostrar un mensaje de texto indicando que la ruta indicada no es válida.
-- El sistema deberá mostrar una barra de navegación cómo la siguiente y redirigir al usuario a la ruta según la opción seleccionada, usando para ello `routerLink`:
-    
-    ![navbar](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/navbar.png)
-    
-    Nota: para poder implementar un menú desplegable cómo se muestra en la imagen anterior puedes hacer uso del siguiente código proporcionado en la página de Bootstrap:[https://getbootstrap.com/docs/5.3/components/navbar/](https://getbootstrap.com/docs/5.3/components/navbar/)
-    
-    Ten en cuenta que tendrás que cambiar en tu archivo `angular.json` la siguiente línea de código:
-    
-    ```json
-                  "node_modules/bootstrap/dist/js/bootstrap.min.js"
-    ```
-    
-    por esta otra para que funcione correctamente la barra de navegación:
-    
-    ```json
-                  "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
-    ```
-    
+Concretamente, se deberá implementar una redirección del botón cancelar mostrado en el formulario de creación/edición de una tarea. Cuando el usuario haga clic en dicho botón se deberá redirigir a la ruta `/tasks`.
 
-# 12. Formularios basados en plantillas.
+# 13. Servicios.
+
+Un servicio es una clase en la que se implementarán todas la lógica de negocio de nuestra aplicación así como el acceso y envío de datos de una API. De esta forma los servicios nos permitirán compartir datos, lógica de negocio o funcionalidades entre diferentes componentes que se encuentren relacionados.
+
+Pongamos un ejemplo tomando como referencia nuestra aplicación Planify, la cual cuenta con diferentes componentes relacionados con el listado, visualización y edición de una tarea. Toda la lógica de nuestra aplicación  relacionada con la gestión de las tareas (obtener las tareas del usuario de la base de datos, guardar una nueva tarea, editar una tarea, etc) la implementaremos en un servicio que será consumido por cada componente, según lo necesite. 
+
+Los servicios cuentan con las siguientes características:
+
+- Son reutilizables: pueden ser llamados desde distintos componentes de la aplicación.
+- Son singleton: solo se crea una instancia del servicio para toda la aplicación, por lo que todos los componentes comparten la misma información.
+- Centralización: toda la lógica estará en un solo lugar, si necesidad de ser repetida por los componentes.
+- Pruebas: es más fácil probar un servicio a tener que probar la lógica de varios componentes.
+
+## 13.1. Creación de un servicio.
+
+Para generar un nuevo servicio usaremos Angular CLI, ejecutando el siguiente comando en la terminal de nuestro IDE:
+
+```bash
+ng generate service services/task
+```
+
+## **13.2. Implementar la lógica del servicio.**
+
+Dentro de nuestro servicio podemos añadir diferentes funciones para gestionar toda la lógica relacionada con la gestión de tareas de nuestra aplicación:
+
+```tsx
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TaskService {
+  private tasks: Task[] = [];
+  
+  getTasks(): Task[] {
+    //TODO: lógica para obtener el listado completo de tareas.
+  }
+  
+  addTask(task: Task): void {
+    //TODO: lógica para añadir una nueva tarea al listado.
+  }
+}
+```
+
+## 13.3. Usar un servicio desde un componente.
+
+Una vez implementado el servicio este ya puede ser usado desde cualquier componente. Para ello, lo primero que debemos hacer es inyectar dicho servicio en el la clase del componente donde queremos usarlo. A continuación se muestra un ejemplo de cómo se inyectaría este servicio en el componente TaskList:
+
+```tsx
+export class TaskListComponent implements OnInit {
+  tasks: string[] = [];
+
+  constructor(private taskService: TaskService) {} // Inyecta el servicio
+
+  ngOnInit(): void {
+    this.tasks = this.taskService.getTasks(); // Obtén las tareas del servicio
+  }
+}
+```
+
+Como se ha podido observar, para inyectar un servicio lo que hemos realizado ha sido pasárselo como parámetro en el constructor de nuestro componente.
+
+## RETO: Implementación del servicio TaskService.
+El objetivo de este reto consiste en extraer toda la lógica de negocio implementada en los controladores de los componentes Tasklist, Taskresume a un servicio llamado Task y ubicado en `/src/app/services` .
+
+# 14. Formularios basados en plantillas.
 
 Los formularios basados en plantillas o Template-driven Forms son una manera declarativa de crear formularios HTML vinculados a los datos (data binding). Son declarativos porque la mayoría de la lógica del formulario se configura directamente en la plantilla HTML.
 
 Este enfoque se suele emplear en formularios sencillos donde no es necesario implementar mucha lógica en el controlador.
 
 Para poder hacer uso de este tipo de formularios es necesario importar el módulo `FormsModule` en el controlador del componente donde será implementado.
-
-```tsx
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet,FormsModule],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
-})
-```
 
 El objetivo de este tipo de formularios es crear un enlace bidireccional entre las propiedades del controlador y los campos del formulario, de tal forma que cuando se modifique un dato en el formulario se actualice el valor en el controlador y viceversa. Para pode realizar dicho enlace se usará la directiva `[(ngModel)]` . Un ejemplo básico sería el siguiente:
 
@@ -1359,7 +1384,7 @@ En la plantilla vamos un formulario con tres campos, dos de texto y uno numéric
 Si implementamos dicho código podemos observar cómo cuando cambiamos el valor de los inputs se actualiza el valor del controlador y se muestra por pantalla el valor actualizado.
 
 
-# 13. Formularios reactivos.
+# 15. Formularios reactivos.
 
 Los formularios reactivos o Reactive Forms nos permitirán crear formularios dinámicos y complejos utilizando el enfoque de la programación reactiva, la cual se basa en gestionar estos formularios desde el controlador donde se declarará el modelo del formulario como un grupo de controles. 
 
@@ -1367,7 +1392,7 @@ Este tipo de formularios es ideal cuando se quiere un mayor control sobre la ló
 
 Para poder implementar los formularios reactivos en nuestra aplicación deberemos importar el siguiente módulo: `ReactiveFormsModule` .
 
-## 13.1 Configuración de la clase del componente.
+## 15.1 Configuración de la clase del componente.
 
 Para poder implementar un formulario reactivo debemos crear en el controlador un objeto del tipo `FormGroup` que será el que represente a nuestro formulario e implementar el constructor para que reciba un objeto `FormBuilder` :
 
@@ -1428,7 +1453,7 @@ Además, podemos acceder al valor de cada uno de los campos del formulario así 
       console.log("Nombre válido?:" + this.registroForm.get("nombre")?.valid);
 ```
 
-## 13.2. Configuración de la plantilla del componente.
+## 15.2. Configuración de la plantilla del componente.
 
 ```html
 <h2>Formulario de Registro</h2>
@@ -1475,7 +1500,7 @@ En la plantilla hemos realizado las siguientes configuraciones:
 - Cada campo usa `formControlName` para vincularse a su respectivo `FormControl` en `registroForm`.
 - Mediante la sintaxis `@if` hemos mostrado mensajes de errores específicos y genéricos basados en el estado de cada `FormControl`.
 
-## 13.3. Validaciones personalizadas a campos individuales:
+## 15.3. Validaciones personalizadas a campos individuales:
 
 Como hemos estudiado en los apartados anteriores, podemos validar los campos de un formulario usando las validaciones proporcionadas por la clase `Validators` , pero además, también podemos realizar la implementación de validaciones personalizadas, cómo, por ejemplo, una validación para verificar que el DNI de un usuario cumple con el formato y letra correcta.
 
@@ -1533,7 +1558,7 @@ registroForm.get('password')?.hasError('invalidPassWord')
 registroForm.get('password')?.errors?.['invalidPassWord']
 ```
 
-## 13.4. Validaciones personalizadas a un grupo de campos:
+## 15.4. Validaciones personalizadas a un grupo de campos:
 
 En el punto anterior hemos visto cómo aplicarle una validación personalizada a un campo concreto, pero, también puede darse el caso de querer aplicar una validación a dos campos al mismo tiempo, por ejemplo a dos campos llamados `password` y `confirmpassword`. Lo interesante sería aplicar una validación personalizada para validar que ambos campos contienen la misma contraseña. Para realizar esto, será necesario configurar una validación personalizada a nivel de grupo.
 
@@ -1565,7 +1590,7 @@ constructor(private fb: FormBuilder) {
 }
 ```
 
-## 13.5. Validaciones desde el controlador:
+## 15.5. Validaciones desde el controlador:
 
 Otra forma que tenemos para poder validar un formulario es suscribiéndonos a los cambios que se produzcan en cada uno de los campos y validando dichos cambios desde el controlador, tal y como se muestra a continuación:
 
@@ -1577,7 +1602,7 @@ Otra forma que tenemos para poder validar un formulario es suscribiéndonos a lo
     confirmPasswordControl?.setErrors(null);
 }
 
-## 11.6. Visualización de validaciones con Bootstrap en la plantilla.
+## 15.6. Visualización de validaciones con Bootstrap en la plantilla.
 
 Una vez que hemos realizado las validaciones en el controlador, vamos a ver cómo configurar la plantilla de nuestro proyecto para que tenga un estilo visual parecido al de la siguiente imagen:
 
@@ -1614,7 +1639,7 @@ Para lograr esto, debemos controlar lo siguiente:
 
 - Podemos aplicar a las directivas anteriores una nueva condición para controlar que únicamente se muestren los errores si el usuario ha interactuado con el campo. De esta forma evitaremos que por defecto en el formulario aparezcan todos los errores. Para ello, será necesario añadir la siguiente conción: `loginForm.get('username')?.touched`
 
-### EJERCICIO 6 : Creación y edición de tareas
+## RETO: Creación y edición de tareas
 
 El objetivo del presente ejercicio es añadir un formulario reactivo que nos permita crear nuevas tareas. La implementación de este formulario se realizará en el componente `TaskForm` que deberá ser mostrado en el componente padre `TaskList`. A continuación se definen los diferentes requisitos funcionales:
 
@@ -1641,73 +1666,6 @@ El objetivo del presente ejercicio es añadir un formulario reactivo que nos per
 
 
 ![exercise6-scheme](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/exercise6-scheme.png)
-
-# 15. Servicios.
-
-Un servicio es una clase en la que se implementarán todas la lógica de negocio de nuestra aplicación así como el acceso y envío de datos de una API. De esta forma los servicios nos permitirán compartir datos, lógica de negocio o funcionalidades entre diferentes componentes que se encuentren relacionados.
-
-Pongamos un ejemplo tomando como referencia nuestra aplicación de gestión de tareas, la cual cuenta con diferentes componentes relacionados con el listado, visualización y edición de una tarea. Toda la lógica de nuestra aplicación  relacionada con la gestión de las tareas (obtener las tareas del usuario de la base de datos, guardar una nueva tarea, editar una tarea, etc) la implementaremos en un servicio que será consumido por cada componente, según lo necesite. 
-
-Los servicios cuentan con las siguientes características:
-
-- Son reutilizables: pueden ser llamados desde distintos componentes de la aplicación.
-- Son singleton: solo se crea una instancia del servicio para toda la aplicación, por lo que todos los componentes comparten la misma información.
-- Centralización: toda la lógica estará en un solo lugar, si necesidad de ser repetida por los componentes.
-- Pruebas: es más fácil probar un servicio a tener que probar la lógica de varios componentes.
-
-## 15.1. Creación de un servicio.
-
-Para generar un nuevo servicio usaremos Angular CLI, ejecutando el siguiente comando en la terminal de nuestro IDE:
-
-```bash
-ng generate service services/task
-```
-
-## **15.2. Implementar la lógica del servicio.**
-
-Dentro de nuestro servicio podemos añadir diferentes funciones para gestionar toda la lógica relacionada con la gestión de tareas de nuestra aplicación:
-
-```tsx
-import { Injectable } from '@angular/core';
-import { Task } from '../../../models/task.model';
-
-@Injectable({
-providedIn: 'root', // Hace que el servicio esté disponible en toda la aplicación
-})
-export class TaskService {
-  private tasks: Task[] = [];
-  
-  getTasks(): Task[] {
-    //TODO: lógica para obtener el listado completo de tareas.
-  }
-  
-  addTask(task: Task): void {
-    //TODO: lógica para añadir una nueva tarea al listado.
-  }
-}
-```
-
-## 15.3. Usar un servicio desde un componente.
-
-Una vez implementado el servicio este ya puede ser usado desde cualquier componente. Para ello, lo primero que debemos hacer es inyectar dicho servicio en el la clase del componente donde queremos usarlo. A continuación se muestra un ejemplo de cómo se inyectaría este servicio en el componente TaskList:
-
-```tsx
-export class TaskListComponent implements OnInit {
-  tasks: string[] = [];
-
-  constructor(private taskService: TaskService) {} // Inyecta el servicio
-
-  ngOnInit(): void {
-    this.tasks = this.taskService.getTasks(); // Obtén las tareas del servicio
-  }
-}
-```
-
-Como se ha podido observar, para inyectar un servicio lo que hemos realizado ha sido pasárselo como parámetro en el constructor de nuestro componente.
-
-## EJERCICIO 8: Implementación del servicio TaskService.
-
-El objetivo del presente ejercicio consiste en extraer toda la lógica de negocio implementada en los controladores de los componentes Tasklist, Taskresume y Taskform a un servicio llamado Task y ubicado en `/src/app/services` .
 
 # Bibliografía
 
