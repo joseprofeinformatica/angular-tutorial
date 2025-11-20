@@ -1099,8 +1099,6 @@ Además, también será necesario realizar la configuración de los siguientes b
 
 - Componente Tasklist:
   - Botón `Crear tarea`: redirección a `/new`
-- Componente Taskresume:
-  - Botón `Editar`: redirección a `/edit/:idtarea`
 - Componente Stats:
   - Botón `Nueva tarea`: redirección a `/new`
 - Componente Taskform:
@@ -1236,7 +1234,7 @@ Supongamos que tenemos un componente llamado LoginComponente que es el encargado
 ```
 export class LoginComponent {
 
-  **constructor(private routerService:Router){}**
+  constructor(private routerService:Router){}
 }
 
 ```
@@ -1252,7 +1250,7 @@ export class LoginComponent {
     //TODO: Comprobamos que el login es correcto
 
     //Redirección sin parámetros
-    **this.routerService.navigate(['/home']);**
+    this.routerService.navigate(['/home']);
   }
 ```
 
@@ -1271,8 +1269,8 @@ El objetivo de este reto consiste en realizar una redirección a una ruta desde 
 - Componente Singin:
   - Botón `Registrarse`: tras verificar que los datos introducidos en el formulario son correctos redirigirá a la ruta `/tasks`.
 
+Implementa en el controlador de cada uno de los siguientes componentes un método y asocialo a cada botón para que realice la redirección cuando el usuario haga clic en alguno de ellos.
 
-Concretamente, se deberá implementar una redirección del botón cancelar mostrado en el formulario de creación/edición de una tarea. Cuando el usuario haga clic en dicho botón se deberá redirigir a la ruta `/tasks`.
 
 # 13. Servicios.
 
@@ -1389,6 +1387,9 @@ En la plantilla vamos un formulario con tres campos, dos de texto y uno numéric
 
 Si implementamos dicho código podemos observar cómo cuando cambiamos el valor de los inputs se actualiza el valor del controlador y se muestra por pantalla el valor actualizado.
 
+## RETO: Funcionalidades formulario inicio de sesión.
+
+El objetivo del presente reto es implementar un formulario basado en plantillas en el componente `LoginComponente` para que los usuarios puedan iniciar sesión en la aplicación Planify. Tomando como referencia la plantilla proporcionada, realiza las modificaciones necesarias para capturar los valores introducidos en los campos del formulario de inicio de sesión y redirigir a la ruta `/tasks`.
 
 # 15. Formularios reactivos.
 
@@ -1459,6 +1460,7 @@ Además, podemos acceder al valor de cada uno de los campos del formulario así 
       console.log("Nombre válido?:" + this.registroForm.get("nombre")?.valid);
 ```
 
+
 ## 15.2. Configuración de la plantilla del componente.
 
 ```html
@@ -1467,33 +1469,14 @@ Además, podemos acceder al valor de cada uno de los campos del formulario así 
   <div>
     <label for="nombre">Nombre:</label>
     <input id="nombre" type="text" formControlName="nombre" />
-    @if(this.registroForm.get('nombre')?.errors?.['required']) {
-        <span>(El nombre no puede quedar vacío)</span>
-    }
-     @if(this.registroForm.get('nombre')?.errors) {
-        <span>(El nombre no es válido)</span>
-    }
   </div>
   <div>
     <label for="edad">Edad:</label>
     <input id="edad" type="number" formControlName="edad" />
-    @if(this.registroForm.get('edad')?.errors?.['required']) {
-        <span>(La edad no puede quedar vacío)</span>
-    }
-     @if(this.registroForm.get('nombre')?.errors) {
-        <span>(La edad no es válida)</span>
-    }
   </div>
-
   <div>
     <label for="mail">Email:</label>
     <input type="mail" id="mail" formControlName="mail" />
-    @if(this.registroForm.get('mail')?.errors?.['required']) {
-        <span>(El email no puede quedar vacío)</span>
-    }
-     @if(this.registroForm.get('mail')?.errors) {
-        <span>(El email no es válido)</span>
-    }
   </div>
 
   <button type="submit" [disabled]="registroForm.invalid">Registrarse</button>
@@ -1504,13 +1487,13 @@ En la plantilla hemos realizado las siguientes configuraciones:
 
 - La directiva `[formGroup]` conecta el formulario HTML con el `FormGroup` definido en el controlador.
 - Cada campo usa `formControlName` para vincularse a su respectivo `FormControl` en `registroForm`.
-- Mediante la sintaxis `@if` hemos mostrado mensajes de errores específicos y genéricos basados en el estado de cada `FormControl`.
+- Mediante la directiva `[disabled]="registroForm.invalid"` hemos deshabilitado el botón de enviar hasta que el formulario no sea válido.
 
 ## 15.3. Validaciones personalizadas a campos individuales:
 
 Como hemos estudiado en los apartados anteriores, podemos validar los campos de un formulario usando las validaciones proporcionadas por la clase `Validators` , pero además, también podemos realizar la implementación de validaciones personalizadas, cómo, por ejemplo, una validación para verificar que el DNI de un usuario cumple con el formato y letra correcta.
 
-Para poder implementar una nueva validación es necesario implementar una función que un objeto con errores o `null` si la validación es exitosa. Dicha función la implementaremos en un archivo diferente llamada `login.validator.ts` La estructura que debe tener la función de validación es la siguiente
+Para poder implementar una nueva validación es necesario implementar una función que devuelva un objeto con errores o  con un`null` si la validación es exitosa. Dicha función la implementaremos en un archivo diferente llamada `login.validator.ts` que ubicaremos en el contenedor `validations` dentro de `src/app`. La estructura que debe tener la función de validación es la siguiente
 
 ```tsx
 //login.validator.ts
@@ -1542,7 +1525,7 @@ export function passwordValidator(): ValidatorFn {
 }
 ```
 
-La función de validación anterior recibirá un parámetro `control` de tipo `AbstractControl` que representa al formulario reactivo dónde estamos usando dicha validación. Dentro de dicha función se obtendrá el valor del campo mediante un `contro.value` y se realizarán las comprobaciones necesarias. Si la validación es correcta, es decir, no hay errores, se devolverá null, de lo contrario, se devolverá un objeto con los errores producidos. Dicho objeto tendrá la siguiente estructura: `{nombreError1:true, nombreError2:true}` 
+La función de validación anterior recibirá un parámetro `control` de tipo `AbstractControl` que representa al formulario reactivo dónde estamos usando dicha validación. Dentro de dicha función se obtendrá el valor del campo mediante un `control.value` y se realizarán las comprobaciones necesarias. Si la validación es correcta, es decir, no hay errores, se devolverá null, de lo contrario, se devolverá un objeto con los errores producidos. Dicho objeto tendrá la siguiente estructura: `{nombreError1:true, nombreError2:true}` 
 
 Para poder usar dichas validaciones personalizadas en el controlador, tendremos que modificar la definición de nuestro FormGroup:
 
@@ -1551,7 +1534,7 @@ constructor(private fb: FormBuilder) {
 this.myForm = this.fb.group({
   'username': ['', [Validators.required]], // Aplica la validación personalizada
   'email': ['', [Validators.required, Validators.email]],
-  **'password':['', [**Validators.required,**passwordValidator()]],
+  'password':['', [**Validators.required,passwordValidator()]],
   'confirmPassword':['', [**Validators.required**]],**
 });
 }
@@ -1590,8 +1573,8 @@ constructor(private fb: FormBuilder) {
     'password':['', [Validators.required,passwordValidator()]],
     'confirmPassword':['', [Validators.required]],
   },
-  **{
-  validators:passwordsMatchValidator()**
+  {
+  validators:passwordsMatchValidator()
   });
 }
 ```
@@ -1599,7 +1582,7 @@ constructor(private fb: FormBuilder) {
 ## 15.5. Validaciones desde el controlador:
 
 Otra forma que tenemos para poder validar un formulario es suscribiéndonos a los cambios que se produzcan en cada uno de los campos y validando dichos cambios desde el controlador, tal y como se muestra a continuación:
-
+```ts
  this.passwordForm.get('password')?.valueChanges.subscribe(() => {
   const confirmPasswordControl = this.passwordForm.get('confirmPassword');
   if (confirmPasswordControl?.value !== this.passwordForm.get('password')?.value) {
@@ -1607,6 +1590,7 @@ Otra forma que tenemos para poder validar un formulario es suscribiéndonos a lo
   } else {
     confirmPasswordControl?.setErrors(null);
 }
+```
 
 ## 15.6. Visualización de validaciones con Bootstrap en la plantilla.
 
@@ -1621,15 +1605,22 @@ Para lograr esto, debemos controlar lo siguiente:
     
     ```html
     <input type="text" class="form-control" id="username" 
-    [ngClass]="{'is-valid': loginForm.get('username')?.valid}">
-    
+    [ngClass]="{'is-valid': this.loginForm.get('username')?.valid,'is-invalid':this.loginForm.get('username')?.invalid}" />
     ```
-    
+El problema que tiene lo realizado en el fragmento de código anterior es que en cuanto el usuario entre al formulario de creación se mostrarán todos los errores. Una mejora que se puede aplicar es que únicamente se muestren los errores si el usuario ha interactuado con el campo. De esta forma evitaremos que por defecto en el formulario aparezcan todos los errores. Para ello, será necesario añadir la siguiente conción: `loginForm.get('username')?.touched`. El código quedaría así:
+   
+    ```html
+    <input type="text" class="form-control" id="username" 
+    [ngClass]="{'is-valid': this.loginForm.get('username')?.valid && this.loginForm.get('name')?.touched,'is-invalid':this.loginForm.get('username')?.invalid && this.loginForm.get('name')?.touched }" />
+   
+    ```
+
+
 - Para mostrar los textos con la información sobre los errores debajo de cada campo usaremos un divisor que tendrá la clase `valid-feedback` o `invalid-feedback` para mostrar el texto en color verde o rojo, respectivamente. Dentro de este divisor usaremos la etiqueta <small> para mostrar los errores específicos:
 
 ```html
  <div class="invalid-feedback">
-   <small> Please choose a username.<small>
+   <small> Please choose a username.</small>
  </div>
 ```
 
@@ -1643,7 +1634,79 @@ Para lograr esto, debemos controlar lo siguiente:
  <small *ngIf="loginForm.get('username')?.hasError('validUsername')"> This user is in use </small>
 ```
 
-- Podemos aplicar a las directivas anteriores una nueva condición para controlar que únicamente se muestren los errores si el usuario ha interactuado con el campo. De esta forma evitaremos que por defecto en el formulario aparezcan todos los errores. Para ello, será necesario añadir la siguiente conción: `loginForm.get('username')?.touched`
+## 14.7. Implementación del método `onSubmit`.
+
+Una vez que el campo ha sido validado y el botón `Guardar` se ha habilitado es el momento de obtener la información desde el controlador y procesar la información del formulario para su posterior guardado en base de datos. 
+
+Para poder realizar el envío de los datos al controlador es fundamental que el formulario de la plantilla se haya capturado el evento submit de la siguiente forma: `(ngSubmit)="onSubmit()"`. Además, debe existir dentro del formulario un botón de tipo `submit` que será el que desencadene el evento: `<button type="submit" [disabled]="registroForm.invalid">Registrarse</button>`.
+
+Cuando el usuario pulse el botón `Registrarse` se realizará una llamada al método `onSubmit()` definido en el controlador. Desde este método podremos acceder a los valores del formulario de la siguiente forma:
+
+```ts
+  onSubmit(){
+    // Comprobamos que el formulario sea válido
+    if(this.registerForm.valid){
+        let name = this.taskForm.get('name')?.value;
+        let surname = this.taskForm.get('surname')?.value;
+        let email = this.taskForm.get('email')?.value;
+        let password = this.taskForm.get('password')?.value;
+        let confirmPassword = this.taskForm.get('confirmPassword')?.value;
+        
+        //Operamos con los datos obtenidos
+    }
+  }
+}
+```
+En el código anterior se puede observar cómo se puede acceder a los valores de cada uno de los campos del formulario reactivo `registerForm` que ha sido definido. Una vez que se han obtenido todos los valores del formulario se pueden operar con ellos.
+
+
+
+Para ello, será necesario configurar el formulario de nuestra plant en la etiqueta del formulario el siguiente evento
+
+## 14.8. Carga de datos en un formulario reactivo.
+
+En ocasiones es necesario realizar la precarga de los datos de un formulario, por ejemplo, cuando se está editando una de las tareas. En el momento que el usuario acceda al formulario es necesario que este se encuentre relleno con los datos de la tarea que desea editar. 
+
+![task-editing](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/task-editing.png)
+
+En la anterior ilustración se puede observar como se está editando la tarea con identificador `1` y cómo los campos del formulario se han rellenado con los datos de dicha tarea.
+
+Para inicializar un formulario es necesario que nuestro controlador implemente la interfaz `OnInit` y dentro del método de la interfaz se realizará lo siguiente:
+```ts
+  ngOnInit(): void {
+    //1. Obtención del identificador pasado por parámetro
+    this.route.paramMap.subscribe((params)=>{
+      let id = params.get("id");
+      if(id){
+        // 2. Comprobar que el parámetro :id sea diferente de null o undefined
+        try{
+          // 3. Convertimos el id a entero
+          let idNumber = Number.parseInt(id);
+
+          //4. LLamamos al método getById del servicio para obtener la tarea con el id indicado
+          let task = this.taskService.getById(idNumber);
+
+          //5. Verificamos que la tarea existe
+          if(task){
+
+            //6. Se inicializa el formulario con los datos, usando el método setValue
+            this.taskForm.setValue(
+              {id:task.id.toString(),
+                createdAt:task.createdAt,
+                name:task.name,
+                description:task.description,
+                priority:task.priority,
+                status:task.status,
+                expiresAt:task.expiresAt
+              })
+          }
+        }catch{}
+      }
+    })
+  }
+```
+En el código anterior se ha mostrado como inicializar un formulario. Fíjate cómo al método `setValue` se le está pasándo como parámetro un objeto cuyas claves corresponde al identificado de los campos del formulario definido y como valor la información de la tarea recuperada.
+
 
 ## RETO: Creación y edición de tareas
 
