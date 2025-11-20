@@ -272,6 +272,11 @@ ng generate component components/navbar
   - `taskform/`→ componente para crear o editar una tarea.
 
   - `taskresume/` → componente que mostrará de manera resumida una tarea.
+- `dashboard` -> carpeta que contendrá los componentes relacionados con el dashboard
+  
+  - `profile` -> componente que mostrará el perfil de un usuario.
+  
+  - `stats` -> componente que mostrará las estadísticas de un usuario.
 
 El resultado tras la creación de los componentes debe ser el siguiente:
 
