@@ -156,7 +156,7 @@ Podemos observar cómo se ha añadido dicha dependencia al archivo `package.json
     "bootstrap": "^5.3.3",
 ```
 
-Una vez instalado el módulo de node, tenemos que indicarle a Angular dónde se encuentra el archivo que contiene los estilos del framework y el archivo de funcionalidades .js. Para ello, modificaremos el archivo `angular.json` y añadiremos las siguientes líneas.
+Una vez instalado el módulo de node, tenemos que indicarle a Angular dónde se encuentra el archivo que contiene los estilos del framework y el archivo de funcionalidades .js. Para ello, modificaremos el archivo `angular.json` y añadiremos las siguientes líneas dentro de `build`.
 
 ```json
 "styles": [
@@ -168,7 +168,7 @@ Una vez instalado el módulo de node, tenemos que indicarle a Angular dónde se 
   "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
 ]
 ```
-
+Para poder probar que Bootstrap funciona correctamente podemos hacer uso de uno de sus iconos en la plantilla de nuestro componente principal. Si aparece el icono del avión tendremos instalado y configurado correctamente Bootstrap.
 `<i class="bi bi-airplane-engines"></i>`
 
 Ya tendríamos Boostrap listo para ser usado en nuestro proyecto Angular.
