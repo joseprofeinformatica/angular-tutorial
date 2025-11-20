@@ -284,7 +284,7 @@ El resultado tras la creación de los componentes debe ser el siguiente:
 ![EstructuraComponentes](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/reto-estructura-componentes.png)
 
 
-### Reto 4. Configurando el Navbar y Footer.
+### RETO. Configurando el Navbar y Footer.
 
 Modifica la plantilla de los componentes `navbar` y añade una barra de navegación de Bootstrap. Modifica el HTML del componente de Bootstrap, cambia el nombre de la app y añade las siguientes opciones al menú:
  - Home
