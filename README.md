@@ -28,7 +28,7 @@ Planify permitirá al usuario crear, visualizar, editar y eliminar tareas, asign
 Para poder crear un proyecto en Angular previamente necesitamos tener instalado node y typescript. Además, es necesario instalar Angular CLI, herramienta que nos permitirá crear la estructura de un proyecto Angular.
 
 ```jsx
-npm install -g @angular/cli
+npm install -g  @angular/cli@19.2.19
 ```
 
 Una vez instalado Angular CLI podremos crear un nuevo proyecto mediante el siguiente comando:
