@@ -698,34 +698,9 @@ export class AppComponent {
 
 Cuando el usuario hace clic en el botón, el método mostrarMensaje() se ejecuta y cambia el valor de mensaje, que luego se muestra en la vista.
 
-## 7.2. Ejemplo de cómo capturar un evento de teclado keyup:
 
-```tsx
-// app.component.ts
-import { Component } from '@angular/core';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
-})
-export class AppComponent {
-  mensaje: string = '';
-
-  mostrarMensaje() {
-    this.mensaje = '¡Botón clicado!';
-  }
-}
-
-```
-
-```html
-<!-- app.component.html -->
-<button (click)="mostrarMensaje()">Haz clic aquí</button>
-<p>{{ mensaje }}</p>
-```
-
-## 7.3. Obtener el elemento que ha desencadenado el evento.
+## 7.2. Obtener el elemento que ha desencadenado el evento.
 
 En Angular, puedes capturar el elemento que ha desencadenado un evento pasándole el objeto $event al método del componente. Este objeto $event contiene información detallada sobre el evento, incluido el elemento DOM que fue clicado.
 
@@ -743,6 +718,34 @@ capturarElemento(event: Event) {
 }
 ```
 
+## 7.3. Ejemplo de cómo capturar un evento de teclado keyup:
+
+```tsx
+// app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  mensaje: string = '';
+
+  mostrarTexto(event:Event){
+    const element = event.target as HTMLInputElement;
+    console.log(element.value)
+  }
+}
+
+```
+
+```html
+<!-- app.component.html -->
+<div>
+  <input type="text" placeholder="Introduce un texto aquí!" (keyup)="mostrarText($event)"/>
+</div>
+```
 ### Ejercicio: Contador de números
 
 Tu objetivo es desarrollar un componente en Angular que funcione como un contador. Este componente debe hacer lo siguiente:
