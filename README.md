@@ -1392,7 +1392,7 @@ Si implementamos dicho código podemos observar cómo cuando cambiamos el valor 
 
 ## RETO: Funcionalidades formulario inicio de sesión.
 
-El objetivo del presente reto es implementar un formulario basado en plantillas en el componente `LoginComponente` para que los usuarios puedan iniciar sesión en la aplicación Planify. Tomando como referencia la plantilla proporcionada, realiza las modificaciones necesarias para capturar los valores introducidos en los campos del formulario de inicio de sesión y redirigir a la ruta `/tasks`.
+El objetivo del presente reto es implementar un formulario basado en plantillas en el componente `LoginComponente` para que los usuarios puedan iniciar sesión en la aplicación Planify. Tomando como referencia la plantilla proporcionada, realiza las modificaciones necesarias para capturar los valores introducidos en los campos del formulario de inicio de sesión. Verifica que el usuario y la contraseña son válidas y redirigue a la ruta `/tasks`.
 
 # 15. Formularios reactivos.
 
