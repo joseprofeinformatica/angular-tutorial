@@ -1492,9 +1492,11 @@ En la plantilla hemos realizado las siguientes configuraciones:
 - Cada campo usa `formControlName` para vincularse a su respectivo `FormControl` en `registroForm`.
 - Mediante la directiva `[disabled]="registroForm.invalid"` hemos deshabilitado el botón de enviar hasta que el formulario no sea válido.
 
-## 15.3. Validaciones personalizadas a campos individuales:
+## 15.3. Validaciones personalizadas:
 
 Como hemos estudiado en los apartados anteriores, podemos validar los campos de un formulario usando las validaciones proporcionadas por la clase `Validators` , pero además, también podemos realizar la implementación de validaciones personalizadas, cómo, por ejemplo, una validación para verificar que el DNI de un usuario cumple con el formato y letra correcta.
+
+### 15.3.1 Validaciones a un campo.
 
 Para poder implementar una nueva validación es necesario implementar una función que devuelva un objeto con errores o  con un`null` si la validación es exitosa. Dicha función la implementaremos en un archivo diferente llamada `login.validator.ts` que ubicaremos en el contenedor `validations` dentro de `src/app`. La estructura que debe tener la función de validación es la siguiente
 
@@ -1503,32 +1505,32 @@ Para poder implementar una nueva validación es necesario implementar una funci�
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 //Ejemplo estructura función
-export function customValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    let valorCampo = control.value
-    const isValid = true /* condición para validar el valor */;
-    return isValid ? null : { customErrorKey: true }; // Error si no es válido
-  };
-}
-/**
-* Función que verifica que una contraseña tenga un número, un caracter especial, una letra mayúscula y más de 8 caracteres
-*/
-export function passwordValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const password = control.value || '';
-    const hasNumber = /\d/.test(password); // Verifica que contenga al menos un número
-    const hasUppercase = /[A-Z]/.test(password); // Verifica que contenga al menos una mayúscula
-    const hasSpecialCharacter = /[!@#$%^&*(),.?":{}|<>]/.test(password); // Caracteres especiales
-    const hasMinLength = password.length > 8; // Verifica que tenga más de 8 caracteres
+export function customValidator(control: AbstractControl): ValidationErrors | null {
 
-    // Comprobamos si todos los criterios son válidos
-    const isValid = hasNumber && hasUppercase && hasSpecialCharacter && hasMinLength;
-    return isValid ? null : { invalidPassWord: true }; // Error si no es válida
-  };
+  let valorCampo = control.value
+  const isValid = true /* condición para validar el valor */;
+  return isValid ? null : { customErrorKey: true }; // Error si no es válido
+
+}
+
+```
+Para poder usar la validación personalizada sobre el campo en el componente debemos añadirla como se muestra a continuación:
+
+```tsx
+//login.validator.ts
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+
+//Ejemplo estructura función
+export function customValidator(control: AbstractControl): ValidationErrors | null {
+
+  let valorCampo = control.value
+  const isValid = true /* condición para validar el valor */;
+  return isValid ? null : { customErrorKey: true }; // Error si no es válido
+
 }
 ```
 
-La función de validación anterior recibirá un parámetro `control` de tipo `AbstractControl` que representa al formulario reactivo dónde estamos usando dicha validación. Dentro de dicha función se obtendrá el valor del campo mediante un `control.value` y se realizarán las comprobaciones necesarias. Si la validación es correcta, es decir, no hay errores, se devolverá null, de lo contrario, se devolverá un objeto con los errores producidos. Dicho objeto tendrá la siguiente estructura: `{nombreError1:true, nombreError2:true}` 
+La función de validación anterior recibirá un parámetro `control` de tipo `AbstractControl` que representa el campo del formulario dónde estamos usando dicha validación. Dentro de dicha función se obtendrá el valor del campo mediante un `control.value` y se realizarán las comprobaciones necesarias. Si la validación es correcta, es decir, no hay errores, se devolverá null, de lo contrario, se devolverá un objeto con los errores producidos. Dicho objeto tendrá la siguiente estructura: `{nombreError1:true, nombreError2:true}` 
 
 Para poder usar dichas validaciones personalizadas en el controlador, tendremos que modificar la definición de nuestro FormGroup:
 
@@ -1537,7 +1539,7 @@ constructor(private fb: FormBuilder) {
 this.myForm = this.fb.group({
   'username': ['', [Validators.required]], // Aplica la validación personalizada
   'email': ['', [Validators.required, Validators.email]],
-  'password':['', [**Validators.required,passwordValidator()]],
+  'password':['', [**Validators.required,customValidator]],
   'confirmPassword':['', [**Validators.required**]],**
 });
 }
@@ -1545,57 +1547,75 @@ this.myForm = this.fb.group({
 
 Estos errores pueden ser capturados posteriormente desde el formulario:
 
-```tsx
-registroForm.get('password')?.hasError('invalidPassWord')
-registroForm.get('password')?.errors?.['invalidPassWord']
+```html
+<form [formGroup]="myForm">
+<input formControlName="username" placeholder="Nombre de usuario">
+      @if (userForm.get('username')?.errors?.['forbiddenName']) {
+        <small style="color: red;">El nombre 'admin' no está permitido.</small>
+      }
+</form>
 ```
+### 15.3.2 Validaciones a un campo con parámetros.
+En ocasiones es necesario pasarle datos a la función de validación personalizada para modificar su comportamiento. Por ejemplo, un longitud mínima o una lista de palabras prohibidas.
 
-## 15.4. Validaciones personalizadas a un grupo de campos:
-
-En el punto anterior hemos visto cómo aplicarle una validación personalizada a un campo concreto, pero, también puede darse el caso de querer aplicar una validación a dos campos al mismo tiempo, por ejemplo a dos campos llamados `password` y `confirmpassword`. Lo interesante sería aplicar una validación personalizada para validar que ambos campos contienen la misma contraseña. Para realizar esto, será necesario configurar una validación personalizada a nivel de grupo.
-
-Lo primero que haremos será definir nuestra validación personalizada:
+Para ello, la función de validación tendrá una estructura un poco diferente al anterior caso:
 
 ```tsx
-export function passwordsMatchValidator(): ValidatorFn {
+//login.validator.ts
+export function restrictedWordsValidator(words: string[]): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    const password = control.get('password')?.value;
-    const confirmPassword = control.get('confirmPassword')?.value;
-    return password === confirmPassword ? null : { passwordsMismatch: true };
+    const isRestricted = words.includes(control.value?.toLowerCase());
+    return isRestricted ? { restrictedWord: true } : null;
   };
 }
 ```
 
-En el controlador sería necesario añadir a la definición de nuestro FormGroup una nueva clave llamada `validators`:
+Para usar esta validación será necesario llamarla de la siguiente forma en la clase del componente:
 
 ```tsx
 constructor(private fb: FormBuilder) {
-  this.myForm = this.fb.group({
-    'username': ['', [Validators.required]], // Aplica la validación personalizada
-    'email': ['', [Validators.required, Validators.email]],
-    'password':['', [Validators.required,passwordValidator()]],
-    'confirmPassword':['', [Validators.required]],
-  },
-  {
-  validators:passwordsMatchValidator()
-  });
+this.myForm = this.fb.group({
+  'username': ['', [Validators.required,restrictedWordsValidator(['root', 'superuser'])]], // Aplica la validación personalizada
+  'email': ['', [Validators.required, Validators.email]],
+  'password':['', [Validators.required,customValidator]],
+  'confirmPassword':['', [Validators.required]],
+});
 }
 ```
 
-## 15.5. Validaciones desde el controlador:
+### 15.3.3 Validaciones a nivel de grupo.
+En el punto anterior hemos visto cómo aplicarle una validación personalizada a un campo concreto, pero, también puede darse el caso de querer aplicar una validación a dos campos al mismo tiempo, por ejemplo a dos campos llamados `password` y `confirmpassword`. Lo interesante sería aplicar una validación personalizada para validar que ambos campos contienen la misma contraseña. Para realizar esto, será necesario configurar una validación personalizada a nivel de grupo.
 
-Otra forma que tenemos para poder validar un formulario es suscribiéndonos a los cambios que se produzcan en cada uno de los campos y validando dichos cambios desde el controlador, tal y como se muestra a continuación:
-```ts
- this.passwordForm.get('password')?.valueChanges.subscribe(() => {
-  const confirmPasswordControl = this.passwordForm.get('confirmPassword');
-  if (confirmPasswordControl?.value !== this.passwordForm.get('password')?.value) {
-    confirmPasswordControl?.setErrors({ passwordsMismatch: true });
-  } else {
-    confirmPasswordControl?.setErrors(null);
+```tsx
+//login.validator.ts
+export function matchPasswordValidator(control: AbstractControl): ValidationErrors | null {
+  const password = control.get('password');
+  const confirmPassword = control.get('confirmPassword');
+
+  if (!password || !confirmPassword) {
+    return null;
+  }
+
+  return password.value !== confirmPassword.value ? { passwordMismatch: true } : null;
 }
 ```
 
-## 15.6. Visualización de validaciones con Bootstrap en la plantilla.
+Para usar esta validación será necesario llamarla de la siguiente forma en la clase del componente:
+
+```tsx
+constructor(private fb: FormBuilder) {
+this.myForm = this.fb.group({
+  'username': ['', [Validators.required,restrictedWordsValidator(['root', 'superuser'])]], // Aplica la validación personalizada
+  'email': ['', [Validators.required, Validators.email]],
+  'password':['', [Validators.required,customValidator]],
+  'confirmPassword':['', [Validators.required]],
+},
+{ validators:matchPasswordValidator}
+);
+}
+```
+
+## 15.4. Visualización de validaciones con Bootstrap en la plantilla.
 
 Una vez que hemos realizado las validaciones en el controlador, vamos a ver cómo configurar la plantilla de nuestro proyecto para que tenga un estilo visual parecido al de la siguiente imagen:
 
@@ -1637,7 +1657,7 @@ El problema que tiene lo realizado en el fragmento de código anterior es que en
  <small *ngIf="loginForm.get('username')?.hasError('validUsername')"> This user is in use </small>
 ```
 
-## 14.7. Implementación del método `onSubmit`.
+## 14.5. Implementación del método `onSubmit`.
 
 Una vez que el campo ha sido validado y el botón `Guardar` se ha habilitado es el momento de obtener la información desde el controlador y procesar la información del formulario para su posterior guardado en base de datos. 
 
@@ -1666,7 +1686,7 @@ En el código anterior se puede observar cómo se puede acceder a los valores de
 
 Para ello, será necesario configurar el formulario de nuestra plant en la etiqueta del formulario el siguiente evento
 
-## 14.8. Carga de datos en un formulario reactivo.
+## 14.6. Carga de datos en un formulario reactivo.
 
 En ocasiones es necesario realizar la precarga de los datos de un formulario, por ejemplo, cuando se está editando una de las tareas. En el momento que el usuario acceda al formulario es necesario que este se encuentre relleno con los datos de la tarea que desea editar. 
 
