@@ -1400,48 +1400,106 @@ Los formularios reactivos o Reactive Forms nos permitirán crear formularios din
 
 Este tipo de formularios es ideal cuando se quiere un mayor control sobre la lógica del formulario, las validaciones y los datos.
 
-Para poder implementar los formularios reactivos en nuestra aplicación deberemos importar el siguiente módulo: `ReactiveFormsModule` .
+
+A continuación veremos cómo implementar un formulario reactivo en nuestro proyecto Planify. Concretamente, implementaremos el formulario de registro. Para ello, debemos incluir el siguiente fragmento de código HTML en la plantilla del componente SinginComponent.
+
+```html
+<!--signin.component.html-->
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-3">Create a Planify Account</h3>
+                    <form>
+                        <div class="mb-2 mt-2">
+                            <input class="form-control"  placeholder="Username" />
+                        </div>
+                        <div class="row mt-2 g-2">
+                            <div class="col-12 col-md-6 mb-2">
+                                <input class="form-control" placeholder="First Name" />
+                            </div>
+                            <div class="col-12 col-md-6 mb-2">
+                                <input class="form-control"placeholder="Last Name" />
+                            </div>
+                        </div>
+                        <div class="mb-2 mt-2">
+                            <input class="form-control" placeholder="Email" />
+                        </div>
+                        <div class="row mt-2 g-2">
+                            <div class="col-12 col-md-6 mb-3">
+                                <input class="form-control" type="password"
+                                    placeholder="Password" />
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <input class="form-control" type="password"
+                                    placeholder="Confirm Password" />
+                            </div>
+                        </div>
+                        <button class="btn btn-success w-100" type="submit">Sign In</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+Nuestro componente deberá tener hasta el momento el siguiente aspecto:
+![singin-planify](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/singin-planify.png)
+
+
 
 ## 15.1 Configuración de la clase del componente.
+Una vez creado el formulario con HTML, lo siguiente que debemos hacer es crear un objeto en la clase del componente que será el encargado de representar al formulario y con el cual interactuaremos posteriormente. 
 
-Para poder implementar un formulario reactivo debemos crear en el controlador un objeto del tipo `FormGroup` que será el que represente a nuestro formulario e implementar el constructor para que reciba un objeto `FormBuilder` :
+Lo primero de todo es importar las siguientes clases en los `imports` de `@Component`: `CommonModule,FormsModule, ReactiveFormsModule`
 
-```tsx
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+```ts
+//signin.component.ts
 
 @Component({
-  selector: 'app-form',
-  standalone: true,
-  imports: [FormsModule, ReactiveFormsModule],
-  templateUrl: './form.component.html',
-  styleUrl: './form.component.css'
+  selector: 'app-singin',
+  imports: [CommonModule,FormsModule, ReactiveFormsModule],
+  templateUrl: './singin.component.html',
+  styleUrl: './singin.component.css'
 })
-export class FormComponent {
+```
+Lo siguiente que realizaremos será definir una propiedad llamada `registerForm` que inicializaremos en el constuctor de nuestro componente y que será el encargado de representar a nuestro formulario de HMTL.
 
-  registroForm:FormGroup;
+```ts
+//signin.component.ts
 
- constructor (formBuilder:FormBuilder){
-  this.registroForm = formBuilder.group({
-    'nombre': ['', [Validators.required, Validators.minLength(10)]],
-    'edad': ['', [Validators.required, Validators.min(1),Validators.max(110)]],
-    'mail': ['', [Validators.required, Validators.email]],
+export class SinginComponent {
+registerForm:FormGroup;
+
+constructor (formBuilder:FormBuilder){
+  this.registerForm = formBuilder.group({
+    'username': ['', [Validators.required,Validators.minLength(10)]],
+    'firstname': ['', [Validators.required]],
+    'lastname': ['', [Validators.required]],
+    'email': ['', [Validators.required,Validators.email]],
+    'password': ['', [Validators.required]],
+    'confirmPassword': ['', [Validators.required]]
   });
  }
-  onSubmit() {
-    if (this.registroForm.valid) {
-      console.log('Formulario enviado:', this.registroForm.value);
-      console.log("Nombre:" + this.registroForm.get("nombre")?.value);
-      console.log("Nombre válido?:" + this.registroForm.get("nombre")?.valid);
-    } else {
-      console.log('Formulario no válido');
-    }
-  }
 }
 
 ```
+Vamos a detenernos en analizar el código anterior y a explicar cada uno de los pasos seguidos:
 
-Si nos paramos a analizar el código anterior, lo que hemos hecho ha sido llamar al método `group`del objeto `FormBuilder` del constructor (este objeto nos lo pasará la plantilla), y le hemos pasado un objeto literal que contiene como atributos los nombres de los campos que vamos a definir en el formulario de la plantilla y como valores se le ha pasado un arreglo donde el primer elemento representa el valor inicial del campo y el segundo elemento es un arreglo que contiene las validaciones que se aplicarán a dicho campo. 
+1. Se ha modificado el constructor del componente y se le ha pasado un  parámetro llamado `formBuilder` que es un objeto de tipo `FormBuilder`.
+
+2. Se ha inicializado la propiedad `registerForm`. Para ello, hemos usado el método `group`. En este método hemos creado un objeto donde hemos incluido cada uno de los campos que tendrá nuestro formulario. Para ello, se debe seguir la siguiente estructura:
+
+```json
+{
+  'id_campo_formulario1': ['valor_inicial',[Validaciones]],
+  'id_campo_formulario2': ['valor_inicial',[Validaciones]],
+  ...
+}
+```
 
 Algunas de las validaciones que nos proporciona la clase `Validatos` son:
 
@@ -1452,38 +1510,68 @@ Algunas de las validaciones que nos proporciona la clase `Validatos` son:
 - **`pattern`**: Validar expresiones regulares personalizadas.
 - **`compose` y `composeAsync`**: Combinar validaciones.
 
-Por último, hemos implementado una función `submit()` que será llamada cuando el usuario haga clic en el botón “Enviar” de nuestro formulario. Esta función comprobará si los campos cumplen con las validaciones establecidas empleando la sintaxis:
-
-`this.registroForm.valid`
-
-Además, podemos acceder al valor de cada uno de los campos del formulario así como verificar si se cumplen todas las validaciones establecidas de la siguiente forma:
-
-```tsx
-      console.log("Nombre:" + this.registroForm.get("nombre")?.value);
-      console.log("Nombre válido?:" + this.registroForm.get("nombre")?.valid);
-```
 
 
 ## 15.2. Configuración de la plantilla del componente.
 
-```html
-<h2>Formulario de Registro</h2>
-<form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
-  <div>
-    <label for="nombre">Nombre:</label>
-    <input id="nombre" type="text" formControlName="nombre" />
-  </div>
-  <div>
-    <label for="edad">Edad:</label>
-    <input id="edad" type="number" formControlName="edad" />
-  </div>
-  <div>
-    <label for="mail">Email:</label>
-    <input type="mail" id="mail" formControlName="mail" />
-  </div>
+Una vez que hemos declarado e inicializado el objeto que va a representar a nuestro formulario en la clase del constructor es el momento de vincular dicho objeto con la planitlla usando `Property Binding` en las siguientes etiquetas HTML:
 
-  <button type="submit" [disabled]="registroForm.invalid">Registrarse</button>
-</form>
+1. En la etiqueta `form` se incluirá lo siguiente: `[formGroup]="registerForm"`. De esta forma estamos vinculando el formulario a la propiedad `registerForm` inicializada anteriormente.
+
+2. En cada uno de los campos del formulario donde el usuario introducirá información se incluirá lo siguiente `formControlName="id_campo"`, siendo necesario reemplazar `id_campo` por el identificador de cada uno de los campos que hemos definidos en la propiedad `registerForm`. De esta forma estamos vinculando los campos del formulario HTML con los del objeto de la clase del componente `registerForm`.
+
+Una de las características que tienen los formularios reactivos es que de forma automática validarán los datos introducidos por los usuarios. Una configuración común es deshabilitar el botón de registro si los datos introducidos en los campos no cumple con alguna validación. Para ello mediante `Property Binding` mostaremos el atributo `disabled` si los datos del formulario no son válidos:
+
+```html
+<button class="btn btn-success w-100" type="submit" [disabled]="registerForm.invalid">Sign In</button>
+```
+
+El objeto ``registerForm`` tiene una propiedad llamada ``invalid`` que devolverá un booleano cuyo valor variará según si los datos introducidos en el formulario son o no válidos 
+
+El código HTML resultante es el siguiente:
+
+
+```html
+<!--signin.component.html-->
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-3">Create a Planify Account</h3>
+                    <form [formGroup]="registerForm">
+                        <div class="mb-2 mt-2">
+                            <input class="form-control" formControlName="username" placeholder="Username" />
+                        </div>
+                        <div class="row mt-2 g-2">
+                            <div class="col-12 col-md-6 mb-2">
+                                <input class="form-control" formControlName="firstName" placeholder="First Name" />
+                            </div>
+                            <div class="col-12 col-md-6 mb-2">
+                                <input class="form-control" formControlName="lastName" placeholder="Last Name" />
+                            </div>
+                        </div>
+                        <div class="mb-2 mt-2">
+                            <input class="form-control" formControlName="email" placeholder="Email" />
+                        </div>
+                        <div class="row mt-2 g-2">
+                            <div class="col-12 col-md-6 mb-3">
+                                <input class="form-control" formControlName="password" type="password"
+                                    placeholder="Password" />
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <input class="form-control" formControlName="confirmPassword" type="password"
+                                    placeholder="Confirm Password" />
+                            </div>
+                        </div>
+                        <button class="btn btn-success w-100" type="submit" [disabled]="registerForm.invalid">Sign In</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 ```
 
 En la plantilla hemos realizado las siguientes configuraciones:
