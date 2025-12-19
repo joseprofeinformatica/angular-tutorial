@@ -1477,8 +1477,8 @@ registerForm:FormGroup;
 constructor (formBuilder:FormBuilder){
   this.registerForm = formBuilder.group({
     'username': ['', [Validators.required,Validators.minLength(10)]],
-    'firstname': ['', [Validators.required]],
-    'lastname': ['', [Validators.required]],
+    'firstName': ['', [Validators.required]],
+    'lastName': ['', [Validators.required]],
     'email': ['', [Validators.required,Validators.email]],
     'password': ['', [Validators.required]],
     'confirmPassword': ['', [Validators.required]]
@@ -1574,38 +1574,16 @@ El código HTML resultante es el siguiente:
 </div>
 ```
 
-En la plantilla hemos realizado las siguientes configuraciones:
-
-- La directiva `[formGroup]` conecta el formulario HTML con el `FormGroup` definido en el controlador.
-- Cada campo usa `formControlName` para vincularse a su respectivo `FormControl` en `registroForm`.
-- Mediante la directiva `[disabled]="registroForm.invalid"` hemos deshabilitado el botón de enviar hasta que el formulario no sea válido.
-
 ## 15.3. Validaciones personalizadas:
 
 Como hemos estudiado en los apartados anteriores, podemos validar los campos de un formulario usando las validaciones proporcionadas por la clase `Validators` , pero además, también podemos realizar la implementación de validaciones personalizadas, cómo, por ejemplo, una validación para verificar que el DNI de un usuario cumple con el formato y letra correcta.
 
 ### 15.3.1 Validaciones a un campo.
 
-Para poder implementar una nueva validación es necesario implementar una función que devuelva un objeto con errores o  con un`null` si la validación es exitosa. Dicha función la implementaremos en un archivo diferente llamada `login.validator.ts` que ubicaremos en el contenedor `validations` dentro de `src/app`. La estructura que debe tener la función de validación es la siguiente
+Para poder implementar una nueva validación es necesario implementar una función que devuelva un objeto con errores o  con un `null` si la validación es exitosa. Dicha función la implementaremos en un archivo diferente llamada `signin.validator.ts` que ubicaremos en el contenedor `validations` dentro de `src/app`. La estructura que debe tener la función de validación es la siguiente
 
 ```tsx
-//login.validator.ts
-import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-
-//Ejemplo estructura función
-export function customValidator(control: AbstractControl): ValidationErrors | null {
-
-  let valorCampo = control.value
-  const isValid = true /* condición para validar el valor */;
-  return isValid ? null : { customErrorKey: true }; // Error si no es válido
-
-}
-
-```
-Para poder usar la validación personalizada sobre el campo en el componente debemos añadirla como se muestra a continuación:
-
-```tsx
-//login.validator.ts
+//signin.validator.ts
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 //Ejemplo estructura función
@@ -1617,32 +1595,23 @@ export function customValidator(control: AbstractControl): ValidationErrors | nu
 
 }
 ```
-
 La función de validación anterior recibirá un parámetro `control` de tipo `AbstractControl` que representa el campo del formulario dónde estamos usando dicha validación. Dentro de dicha función se obtendrá el valor del campo mediante un `control.value` y se realizarán las comprobaciones necesarias. Si la validación es correcta, es decir, no hay errores, se devolverá null, de lo contrario, se devolverá un objeto con los errores producidos. Dicho objeto tendrá la siguiente estructura: `{nombreError1:true, nombreError2:true}` 
+
 
 Para poder usar dichas validaciones personalizadas en el controlador, tendremos que modificar la definición de nuestro FormGroup:
 
 ```tsx
-constructor(private fb: FormBuilder) {
-this.myForm = this.fb.group({
-  'username': ['', [Validators.required]], // Aplica la validación personalizada
-  'email': ['', [Validators.required, Validators.email]],
-  'password':['', [**Validators.required,customValidator]],
-  'confirmPassword':['', [**Validators.required**]],**
-});
-}
+//signin.component.ts
+  this.registerForm = formBuilder.group({
+    'username': ['', [Validators.required,Validators.minLength(10),customValidator]],
+    'firstName': ['', [Validators.required]],
+    'lastName': ['', [Validators.required]],
+    'email': ['', [Validators.required,Validators.email]],
+    'password': ['', [Validators.required]],
+    'confirmPassword': ['', [Validators.required]]
+  });
 ```
 
-Estos errores pueden ser capturados posteriormente desde el formulario:
-
-```html
-<form [formGroup]="myForm">
-<input formControlName="username" placeholder="Nombre de usuario">
-      @if (userForm.get('username')?.errors?.['forbiddenName']) {
-        <small style="color: red;">El nombre 'admin' no está permitido.</small>
-      }
-</form>
-```
 ### 15.3.2 Validaciones a un campo con parámetros.
 En ocasiones es necesario pasarle datos a la función de validación personalizada para modificar su comportamiento. Por ejemplo, un longitud mínima o una lista de palabras prohibidas.
 
@@ -1661,18 +1630,20 @@ export function restrictedWordsValidator(words: string[]): ValidatorFn {
 Para usar esta validación será necesario llamarla de la siguiente forma en la clase del componente:
 
 ```tsx
-constructor(private fb: FormBuilder) {
-this.myForm = this.fb.group({
-  'username': ['', [Validators.required,restrictedWordsValidator(['root', 'superuser'])]], // Aplica la validación personalizada
-  'email': ['', [Validators.required, Validators.email]],
-  'password':['', [Validators.required,customValidator]],
-  'confirmPassword':['', [Validators.required]],
-});
-}
+//signin.component.ts
+  this.registerForm = formBuilder.group({
+    'username': ['', [Validators.required,Validators.minLength(10),restrictedWordsValidator(['admin','superadmin'])]],
+    'firstName': ['', [Validators.required]],
+    'lastName': ['', [Validators.required]],
+    'email': ['', [Validators.required,Validators.email]],
+    'password': ['', [Validators.required]],
+    'confirmPassword': ['', [Validators.required]]
+  },{ validators: matchPasswordValidator}
+  );
 ```
 
 ### 15.3.3 Validaciones a nivel de grupo.
-En el punto anterior hemos visto cómo aplicarle una validación personalizada a un campo concreto, pero, también puede darse el caso de querer aplicar una validación a dos campos al mismo tiempo, por ejemplo a dos campos llamados `password` y `confirmpassword`. Lo interesante sería aplicar una validación personalizada para validar que ambos campos contienen la misma contraseña. Para realizar esto, será necesario configurar una validación personalizada a nivel de grupo.
+En el punto anterior hemos visto cómo aplicarle una validación personalizada a un campo concreto, pero, también puede darse el caso de querer aplicar una validación a dos campos al mismo tiempo, por ejemplo a dos campos llamados `password` y `confirmPassword`. Lo interesante sería aplicar una validación personalizada para validar que ambos campos contienen la misma contraseña. Para realizar esto, será necesario configurar una validación personalizada a nivel de grupo.
 
 ```tsx
 //login.validator.ts
@@ -1691,17 +1662,18 @@ export function matchPasswordValidator(control: AbstractControl): ValidationErro
 Para usar esta validación será necesario llamarla de la siguiente forma en la clase del componente:
 
 ```tsx
-constructor(private fb: FormBuilder) {
-this.myForm = this.fb.group({
-  'username': ['', [Validators.required,restrictedWordsValidator(['root', 'superuser'])]], // Aplica la validación personalizada
-  'email': ['', [Validators.required, Validators.email]],
-  'password':['', [Validators.required,customValidator]],
-  'confirmPassword':['', [Validators.required]],
-},
-{ validators:matchPasswordValidator}
-);
-}
+
+  this.registerForm = formBuilder.group({
+    'username': ['', [Validators.required,Validators.minLength(10),restrictedWordsValidator(['admin','superadmin'])]],
+    'firstName': ['', [Validators.required]],
+    'lastName': ['', [Validators.required]],
+    'email': ['', [Validators.required,Validators.email]],
+    'password': ['', [Validators.required]],
+    'confirmPassword': ['', [Validators.required]]
+  },{ validators: matchPasswordValidator}
+  );
 ```
+Es muy importante prestar atención a cómo se ha incluido esta nueva validación. Como se puede observar no se incluye dentro del objeto que contiene los identificadores de cada uno de los campos del formulario. Es necesario incluirla en un nuevo objeto que contiene una propiedad llamada `validators`.
 
 ## 15.4. Visualización de validaciones con Bootstrap en la plantilla.
 
@@ -1711,18 +1683,16 @@ Una vez que hemos realizado las validaciones en el controlador, vamos a ver cóm
 
 Para lograr esto, debemos controlar lo siguiente:
 
-- Se le deberá añadir a los campos de entradas las clases `is-valid` o `is-invalid` para que muestren el tick verde [**✅**](https://emojipedia.org/es/bot%C3%B3n-de-marca-de-verificaci%C3%B3n) o en rojos con el símbolo de exclamación **❗**.
-    - Para lograr esto, usaremos la directiva vista en el apartado anterior `[ngClass]` . Por ejemplo:
-    
+1. Se le deberá añadir a los campos del formulario la clase `is-valid` o `is-invalid` para que muestren el tick verde [**✅**](https://emojipedia.org/es/bot%C3%B3n-de-marca-de-verificaci%C3%B3n) o en rojos con el símbolo de exclamación **❗**. Para lograr esto, usaremos la directiva vista en el apartado anterior `[ngClass]` . Por ejemplo:
     ```html
     <input type="text" class="form-control" id="username" 
-    [ngClass]="{'is-valid': this.loginForm.get('username')?.valid,'is-invalid':this.loginForm.get('username')?.invalid}" />
+    [ngClass]="{'is-valid': this.registerForm.get('username')?.valid,'is-invalid':this.registerForm.get('username')?.invalid}" />
     ```
-El problema que tiene lo realizado en el fragmento de código anterior es que en cuanto el usuario entre al formulario de creación se mostrarán todos los errores. Una mejora que se puede aplicar es que únicamente se muestren los errores si el usuario ha interactuado con el campo. De esta forma evitaremos que por defecto en el formulario aparezcan todos los errores. Para ello, será necesario añadir la siguiente conción: `loginForm.get('username')?.touched`. El código quedaría así:
+El problema que tiene lo realizado en el fragmento de código anterior es que en cuanto el usuario entre al formulario de creación se mostrarán todos los errores. Una mejora que se puede aplicar es que únicamente se muestren los errores si el usuario ha interactuado con el campo. De esta forma evitaremos que por defecto en el formulario aparezcan todos los errores. Para ello, será necesario añadir la siguiente conción: `registerForm.get('username')?.touched`. El código quedaría así:
    
     ```html
     <input type="text" class="form-control" id="username" 
-    [ngClass]="{'is-valid': this.loginForm.get('username')?.valid && this.loginForm.get('name')?.touched,'is-invalid':this.loginForm.get('username')?.invalid && this.loginForm.get('name')?.touched }" />
+    [ngClass]="{'is-valid': this.registerForm.get('username')?.valid && this.registerForm.get('username')?.touched,'is-invalid':this.registerForm.get('username')?.invalid && this.registerForm.get('username')?.touched }" />
    
     ```
 
@@ -1737,12 +1707,78 @@ El problema que tiene lo realizado en el fragmento de código anterior es que en
 
 - Será necesario implementar en nuestra plantilla toda la lógica para poder controlar qué mensaje de error se mostrará en cada momento. Para ello, usaremos la directiva *ngIf para mostrar un mensaje de error concreto:
 
-```tsx
- <small *ngIf="loginForm.get('username')?.errors?.['required']"> Please choose a username.</small>
- <small *ngIf="loginForm.get('username')?.errors?.['validUsername']"> This user is in use </small>
- 
- <small *ngIf="loginForm.get('username')?.hasError('required')"> Please choose a username.</small>
- <small *ngIf="loginForm.get('username')?.hasError('validUsername')"> This user is in use </small>
+```html
+<div class="invalid-feedback">
+ <small *ngIf="registerForm.get('username')?.errors?.['required']"> Please choose a username.</small>
+</div>
+```
+
+El HTML de nuestro componente Signin quedará así:
+
+```html
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-3">Create a Planify Account</h3>
+                    <form [formGroup]="registerForm">
+                        <div class="mb-2 mt-2">
+                            <input class="form-control" formControlName="username" placeholder="Username"
+                                [ngClass]="{'is-valid': this.registerForm.get('username')?.valid && this.registerForm.get('username')?.touched,'is-invalid':this.registerForm.get('username')?.invalid && this.registerForm.get('username')?.touched }" />
+                            <div class="invalid-feedback">
+                                <small *ngIf="registerForm.get('username')?.errors?.['required']"> Please enter a username.</small>
+                            </div>
+                        </div>
+                        <div class="row mt-2 g-2">
+                            <div class="col-12 col-md-6 mb-2">
+                                <input class="form-control" formControlName="firstName" placeholder="First Name"
+                                    [ngClass]="{'is-valid': this.registerForm.get('firstName')?.valid && this.registerForm.get('firstName')?.touched,'is-invalid':this.registerForm.get('firstName')?.invalid && this.registerForm.get('firstName')?.touched }" />
+                                <div class="invalid-feedback">
+                                    <small *ngIf="registerForm.get('firstName')?.errors?.['required']"> Please enter a first name</small>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 mb-2">
+                                <input class="form-control" formControlName="lastName" placeholder="Last Name"
+                                    [ngClass]="{'is-valid': this.registerForm.get('lastName')?.valid && this.registerForm.get('lastName')?.touched,'is-invalid':this.registerForm.get('lastName')?.invalid && this.registerForm.get('lastName')?.touched }" />
+                                <div class="invalid-feedback">
+                                    <small *ngIf="registerForm.get('lastName')?.errors?.['required']"> Please enter a last name</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-2 mt-2">
+                            <input class="form-control" formControlName="email" placeholder="Email"
+                                [ngClass]="{'is-valid': this.registerForm.get('email')?.valid && this.registerForm.get('email')?.touched,'is-invalid':this.registerForm.get('email')?.invalid && this.registerForm.get('email')?.touched }" />
+                            <div class="invalid-feedback">
+                                <small *ngIf="registerForm.get('email')?.errors?.['required']"> Please enter a valid email.</small>
+                            </div>
+                        </div>
+                        <div class="row mt-2 g-2">
+                            <div class="col-12 col-md-6 mb-3">
+                                <input class="form-control" formControlName="password" type="password"
+                                    placeholder="Password"
+                                    [ngClass]="{'is-valid': this.registerForm.get('password')?.valid && this.registerForm.get('password')?.touched,'is-invalid':this.registerForm.get('password')?.invalid && this.registerForm.get('password')?.touched }" />
+                                <div class="invalid-feedback">
+                                    <small *ngIf="registerForm.get('password')?.errors?.['required']"> Please enter a password.</small>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <input class="form-control" formControlName="confirmPassword" type="password"
+                                    placeholder="Confirm Password"
+                                    [ngClass]="{'is-valid': this.registerForm.get('confirmPassword')?.valid && this.registerForm.get('confirmPassword')?.touched,'is-invalid':this.registerForm.get('confirmPassword')?.invalid && this.registerForm.get('confirmPassword')?.touched }" />
+                                <div class="invalid-feedback">
+                                    <small *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Please confirm your password</small>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-success w-100" type="submit" [disabled]="registerForm.invalid">Sign
+                            In</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 ```
 
 ## 14.5. Implementación del método `onSubmit`.
@@ -1769,7 +1805,6 @@ Cuando el usuario pulse el botón `Registrarse` se realizará una llamada al mé
 }
 ```
 En el código anterior se puede observar cómo se puede acceder a los valores de cada uno de los campos del formulario reactivo `registerForm` que ha sido definido. Una vez que se han obtenido todos los valores del formulario se pueden operar con ellos.
-
 
 
 Para ello, será necesario configurar el formulario de nuestra plant en la etiqueta del formulario el siguiente evento
