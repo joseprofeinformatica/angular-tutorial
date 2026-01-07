@@ -1921,6 +1921,14 @@ A continuación se establecen los requisitos que debes cumplir para realizar el 
 
 8. Implementa toda la lógica necesaria para editar una tarea existente. Para ello, primeramente deberás realizar la precarga de los valores en el formulario y posteriormente realizar el guardado de los cambios que el usuario haya realizado. Una vez realizada la modificación de la tarea, será necesario realizar una redirección al listado de tareas.
 
+# 16. Firebase
+
+## 16.1 Configuración de Firebase
+
+Para poder comenzar a usar Firebase en nuestro proyecto Angular Planify lo primero que debemos hacer es acceder a la siguiente URL y crear un proyecto: https://console.firebase.google.com
+
+![firebase-create-project](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/firebase-create-project.gif)
+
 # Bibliografía
 
 https://www.tutorialesprogramacionya.com/
