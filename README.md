@@ -1666,23 +1666,36 @@ Para usar esta validación será necesario llamarla de la siguiente forma en la 
 ```
 
 ### 15.3.3 Validaciones a nivel de grupo.
-En el punto anterior hemos visto cómo aplicarle una validación personalizada a un campo concreto, pero, también puede darse el caso de querer aplicar una validación a dos campos al mismo tiempo, por ejemplo a dos campos llamados `password` y `confirmPassword`. Lo interesante sería aplicar una validación personalizada para validar que ambos campos contienen la misma contraseña. Para realizar esto, será necesario configurar una validación personalizada a nivel de grupo.
+En el punto anterior hemos visto cómo aplicarle una validación personalizada a un campo concreto, pero, también puede darse el caso de querer aplicar una validación a dos campos al mismo tiempo, por ejemplo a dos campos llamados `password` y `confirmPassword`. Lo interesante sería aplicar una validación personalizada para validar que ambos campos contienen la misma contraseña. A continuación se muestra un ejemplo:
 
 ```tsx
-//login.validator.ts
+//signin.validator.ts
 export function matchPasswordValidator(control: AbstractControl): ValidationErrors | null {
-  const password = control.get('password');
-  const confirmPassword = control.get('confirmPassword');
+    
+  // 1. Obtenemos el valor del campo campo "confirmPassword" (que es el 'control' actual)
+    const confirmValue = control.value;
 
-  if (!password || !confirmPassword) {
-    return null;
-  }
+    // 2. Subimos al padre (el FormGroup) para buscar el otro campo
+    // Es importante verificar si existe el parent para evitar errores al inicio
+    const formGroup = control.parent; 
+    
+    if (!formGroup) {
+      return null; // Aún no está listo el formulario
+    }
 
-  return password.value !== confirmPassword.value ? { passwordMismatch: true } : null;
+    const passwordControl = formGroup.get('password'); // Buscamos al hermano
+    const passwordValue = passwordControl?.value;
+
+    // 3. Comparamos
+    if (!passwordValue || !confirmValue) {
+        return null; // Dejamos que el 'required' haga su trabajo si están vacíos
+    }
+
+    return passwordValue === confirmValue ? null : { mismatch: true };
 }
 ```
 
-Para usar esta validación será necesario llamarla de la siguiente forma en la clase del componente:
+Añadimos la función de validación sobre el campo `confirmPassword`:
 
 ```tsx
 
@@ -1692,11 +1705,10 @@ Para usar esta validación será necesario llamarla de la siguiente forma en la 
     'lastName': ['', [Validators.required]],
     'email': ['', [Validators.required,Validators.email]],
     'password': ['', [Validators.required]],
-    'confirmPassword': ['', [Validators.required]]
-  },{ validators: matchPasswordValidator}
+    'confirmPassword': ['', [Validators.required,matchPasswordValidator]]
+  }
   );
 ```
-Es muy importante prestar atención a cómo se ha incluido esta nueva validación. Como se puede observar no se incluye dentro del objeto que contiene los identificadores de cada uno de los campos del formulario. Es necesario incluirla en un nuevo objeto que contiene una propiedad llamada `validators`.
 
 ## 15.4. Visualización de validaciones con Bootstrap en la plantilla.
 
