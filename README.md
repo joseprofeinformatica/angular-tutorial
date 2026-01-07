@@ -1597,17 +1597,40 @@ export function customValidator(control: AbstractControl): ValidationErrors | nu
 ```
 La función de validación anterior recibirá un parámetro `control` de tipo `AbstractControl` que representa el campo del formulario dónde estamos usando dicha validación. Dentro de dicha función se obtendrá el valor del campo mediante un `control.value` y se realizarán las comprobaciones necesarias. Si la validación es correcta, es decir, no hay errores, se devolverá null, de lo contrario, se devolverá un objeto con los errores producidos. Dicho objeto tendrá la siguiente estructura: `{nombreError1:true, nombreError2:true}` 
 
+A continuación se muestra un ejemplo de una función para realizar la validación del campo `password` del formulario de registro. Con esta función se está comprobando si la contraseña contiene una letra mayúscula y un número:
+
+```tsx
+//signin.validation.ts
+
+export function strongPasswordValidator(control: AbstractControl): ValidationErrors | null {
+  
+    const value = control.value;
+
+    if (!value) {
+      // Si el campo está vacío, dejamos que el validador muestre el error
+      return null;
+    }
+
+    const hasUpperCase = /[A-Z]+/.test(value);
+    const hasNumeric = /[0-9]+/.test(value);
+
+    // Si falta la mayúscula o el número, devolvemos el error
+    const passwordValid = hasUpperCase && hasNumeric;
+
+    return passwordValid ? null : { weakPassword: true };
+}
+```
 
 Para poder usar dichas validaciones personalizadas en el controlador, tendremos que modificar la definición de nuestro FormGroup:
 
 ```tsx
 //signin.component.ts
   this.registerForm = formBuilder.group({
-    'username': ['', [Validators.required,Validators.minLength(10),customValidator]],
+    'username': ['', [Validators.required,Validators.minLength(10)]],
     'firstName': ['', [Validators.required]],
     'lastName': ['', [Validators.required]],
     'email': ['', [Validators.required,Validators.email]],
-    'password': ['', [Validators.required]],
+    'password': ['', [Validators.required,strongPasswordValidator]],
     'confirmPassword': ['', [Validators.required]]
   });
 ```
