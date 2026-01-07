@@ -1891,31 +1891,35 @@ En el código anterior se ha mostrado como inicializar un formulario. Fíjate c�
 
 ## RETO: Creación y edición de tareas
 
-El objetivo del presente ejercicio es añadir un formulario reactivo que nos permita crear nuevas tareas. La implementación de este formulario se realizará en el componente `TaskForm` que deberá ser mostrado en el componente padre `TaskList`. A continuación se definen los diferentes requisitos funcionales:
+El objetivo de este reto es implementar toda la lógica necesaria para poder crear y editar tareas usando formularios reactivos. Para ello, trabajaremos sobre el componente `TaskFormComponent`.
 
-**Requisitos del componente hijo `TaskForm`:**
+A continuación se establecen los requisitos que debes cumplir para realizar el RETO:
 
-- Deberá mostrar un formulario reactivo usando Bootstrap que contenga los siguientes campos y Validaciones:
-    - Nombre: input de tipo texto dónde el usuario indicará el nombre de la tarea. Validaciones:
-        - Requerido y su longitud no puede ser superior a 50 caracteres.
-    - Descripción: input de tipo textarea dónde el usuario indicará la descripción de la tarea. Validaciones:
-        - Su longitud no puede ser superior a 250 caracteres.
-    - Prioridad: desplegable dónde se mostrarán las posibles prioridad que tendrá la tarea. Validaciones:
-        - Requerido y su valor debe ser L, M o H.
-    - Fecha de expiración: input de tipo datetime-local dónde se indicará la fecha de expiración de la tarea. Validaciones:
-        - Requerido y la fecha debe ser posterior al día de creación de la tarea.
-- Deberá mostrar en la plantilla, de manera adecuada, los errores de validaciones producidos.
-- Cuando el usuario haga clic en el botón “Editar Tarea” se deberá llamar a la función`onSubmit()` para que cree un nuevo objeto Tarea con los campos introducidos en el formulario, si dicho formulario es válido, es decir, que no contiene errores de validación. Dicho objeto deberá ser enviado al componente padre para que lo añada al listado de Tareas, usando para ello la comunicación entre componentes vista en el punto anterior.
-    - Nota: para crear el identificador de la tarea puede genera un número aleatorio de gran tamaño.
+1. Lo primero que deberás hacer es implementar un formulario HTML usando Bootstrap que nos permita añadir la información de una nueva tarea o editar una tarea existente. Este formulario deberá tener el siguiente aspecto:
+![new-task-form](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/new-task-form.png)
 
-**Requisitos del componente padre `TaskList`:**
+2. Implementa toda la lógica necesaria en el componente para convertir el formulario HTML en un formulario reactivo. 
 
-- Deberá mostrar encima del listado de tareas un el componente hijo `TaskForm`.
-- Deberá capturar los eventos relativos a la creación o edición enviados por el componente hijo `TaskForm`, así como implementar la lógica asociada a dichas tareas.
-- Cuando un usuario haga clic en el botón Editar de una tarea, se le enviará al componente hijo `TaskForm` el objeto en cuestión para que cargue sus datos en el formulario de edición.
+3. Añade las siguientes validaciones predeterminadas:
+
+- Title: requerido y su longitud no puede ser superior a 50 caracteres.
+- Descripcion: requerido y su longitud no puede ser superior a 250 caracteres.
+- Prioridad: requerido.
+- Estado: requerido.
+- Fecha de expiración: requerido.
 
 
-![exercise6-scheme](https://raw.githubusercontent.com/josearodriguezdaw/angular-tutorial/refs/heads/main/readme-images/exercise6-scheme.png)
+4. Implementa y configurale al formulario las siguietnes validaciones personalizadas:
+
+- Prioridad: debe ser un valor válido para que cumpla con la definición del tipo `TaskPriority`.
+- Status: debe ser un valor válido para que cumpla con la definición del tipo `TaskStatus`.
+- Fecha de expiración. Debe ser una fecha mayor a la actual.
+
+5. Realiza las modificaciones oportunas en la plantilla del componente para que se muestre visualmente si los campos que el usuario ha rellenados han sido validados correctamente o continenen algún error. Muestra también los errores específicos de cada campo.
+
+7. Una vez realizada la validación del formulario, implementa la lógica necesaria para guardar una nueva tarea en el array de tareas. Una vez almacenada correctamente la nueva tarea será necesario realizar una redirección al listado de tareas.
+
+8. Implementa toda la lógica necesaria para editar una tarea existente. Para ello, primeramente deberás realizar la precarga de los valores en el formulario y posteriormente realizar el guardado de los cambios que el usuario haya realizado. Una vez realizada la modificación de la tarea, será necesario realizar una redirección al listado de tareas.
 
 # Bibliografía
 
