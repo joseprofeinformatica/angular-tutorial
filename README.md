@@ -1837,7 +1837,6 @@ Cuando el usuario pulse el botón `Registrarse` se realizará una llamada al mé
         //Operamos con los datos obtenidos
     }
   }
-}
 ```
 En el código anterior se puede observar cómo se puede acceder a los valores de cada uno de los campos del formulario reactivo `registerForm` que ha sido definido. Una vez que se han obtenido todos los valores del formulario se pueden operar con ellos.
 
