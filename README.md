@@ -1922,11 +1922,92 @@ A continuación se establecen los requisitos que debes cumplir para realizar el 
 
 # 16. Firebase
 
-## 16.1 Configuración de Firebase
+## 16.1 Integración de Firebase en un Proyecto Angular
+![Integración de Firebase en un Proyecto Angular](https://www.youtube.com/watch?v=Ujfzdws-d_8)
 
-Para poder comenzar a usar Firebase en nuestro proyecto Angular Planify lo primero que debemos hacer es acceder a la siguiente URL y crear un proyecto: https://console.firebase.google.com
+## 16.2. Uso de Firebase Realtime Database
 
-![firebase-create-project](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/firebase-create-project.gif)
+Para poder hacer uso de Realtime Database en nuestro proyecto Angular, lo primero que debemos hacer es inyectar el servicio `Database` en nuestro servicio.
+
+```ts
+  //OPCION 1
+  constructor(private db:Database) { }
+
+  // OPCION 2
+  private db = inject(Database);
+```
+
+### 16.2.1. Obtener todos los objetos de un nodo.
+
+```ts
+  getAllObjects():Observable<Object[]> {
+    const objectRef = ref(this.db,"/node");
+    
+    // IMPORTANTE: { keyField: 'id' } mete la clave de Firebase 
+    // dentro de la propiedad ID del objeto
+    return listVal(objectRef,{keyField:'id'}) as Observable<Object[]>
+  }
+```
+### 16.2.2. Obtener un objeto a partir de su id.
+
+```ts
+  async getObjectById(objectId:string):Promise<Object|null>{
+    
+    const objectRef = ref(this.db,`/node/${objectId}`);
+
+    const data = await get(objectRef);
+
+    if (data.exists()){
+      
+      // Devolvemos el objeto con el ID inyectado
+      return {id:data.key, ...data.val()} as Object;
+    }
+
+    return null;
+  }
+```
+### 16.2.3. Crear un nuevo objeto.
+
+```ts
+  createObject(object:Object) {
+    
+    const objectRef = ref(this.db,`/node`);
+    
+    // Limpiamos el objeto: le quitamos el ID 
+    // para no guardarlo en Firebase
+    const {id,...dataToSave} = object;
+    
+    return push(objectRef,dataToSave);
+
+  }
+```
+
+### 16.2.4. Actualizar un objeto.
+
+```ts
+  updateObject(object:Object){
+    const objectRef = ref(this.db,`/node/${object.id}`);
+
+    // Limpiamos el objeto: le quitamos el ID y la fecha de creación
+    // para no guardarlo en Firebase
+    const {id,createdAt,...dataToSave} = object;
+
+    return update(objectRef,dataToSave)
+  }
+
+```
+
+### 16.2.4. Borrar un objeto.
+
+```ts
+  removeObject(objectId:string): Promise<void>{
+    const objectRef = ref(this.db,`/node/${objectId}`);
+
+    return remove(objectRef)
+  }
+```
+
+
 
 # Bibliografía
 
