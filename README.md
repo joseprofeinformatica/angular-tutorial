@@ -1925,6 +1925,10 @@ A continuación se establecen los requisitos que debes cumplir para realizar el 
 ## 16.1 Integración de Firebase en un Proyecto Angular
 ![Integración de Firebase en un Proyecto Angular](https://www.youtube.com/watch?v=Ujfzdws-d_8)
 
+## RETO: Integración de Firebase.
+
+Realiza la integración de Google Firebase en tu proyecto Angular siguiendo las indicaciones del vídeo anterior.
+
 ## 16.2. Uso de Firebase Realtime Database
 
 Para poder hacer uso de Realtime Database en nuestro proyecto Angular, lo primero que debemos hacer es inyectar el servicio `Database` en nuestro servicio.
@@ -1937,7 +1941,11 @@ Para poder hacer uso de Realtime Database en nuestro proyecto Angular, lo primer
   private db = inject(Database);
 ```
 
+A continuación se muestran los diferentes métodos necesarios para poder realizar un CRUD de nuestros objetos Task en Planify. Los métodos que se os presenta a continuación son métodos genéricos, es decir, se está utilizando un objeto genérico para explicar su funcionalidad. Este objeto genérico en nuestro proyecto Planify representaría al objeto ``Task``.
+
 ### 16.2.1. Obtener todos los objetos de un nodo.
+
+Para poder obtener todos los objetos almacenados en un nodo usaremos el método `listVal`. Como podrás observar, en el fragmento de código que se muestra a continuación, el identificador de cada uno de los nodos hijos `keyField` se le está estableciendo como valor al campo `id` de nuestro objeto ``Task``.
 
 ```ts
   getAllObjects():Observable<Object[]> {
@@ -1949,6 +1957,10 @@ Para poder hacer uso de Realtime Database en nuestro proyecto Angular, lo primer
   }
 ```
 ### 16.2.2. Obtener un objeto a partir de su id.
+
+En el siguiente fragmento de código se os ejemplifica cómo obtener un objeto de un nodo. Como podéis observar, lo primero que se realiza es la construcción de la referencia que deseamos obtener de la base de datos, para lo cual, usaremos el identificador de dicho objeto. Una vez construida la referencia, accederemos al objeto usando el método ``get``, el cual devuelve una ``Promise`` de `DataSnapshot`.
+
+Para simplificar el uso de este método nuestros componentes, se ha implementado también la obtención de la información del `DataSnapshot`. Es por ello, por lo que es necesario indicar que el método ``getObjectById`` es ``async``, para poder esperar ``await`` a que se resuelva la promose del método ``get``. Una vez que se ha resuelto la promesa se ha construido el objeto con la información del nodo más el identificado obtenido.
 
 ```ts
   async getObjectById(objectId:string):Promise<Object|null>{
@@ -1966,7 +1978,9 @@ Para poder hacer uso de Realtime Database en nuestro proyecto Angular, lo primer
     return null;
   }
 ```
+
 ### 16.2.3. Crear un nuevo objeto.
+Par poder insertar un nuevo objeto de la base de datos usaremos el método ``push``. Este método insertará la información de nuestro objeto en un nuevo nodo hijo al que se le establecerá un identificador aleatorio. Como se puede observar en el fragmento de código siguiente, se está guardando toda la información del objeto excepto el ``id`` para evitar la redundancia de información.
 
 ```ts
   createObject(object:Object) {
@@ -1984,6 +1998,9 @@ Para poder hacer uso de Realtime Database en nuestro proyecto Angular, lo primer
 
 ### 16.2.4. Actualizar un objeto.
 
+A diferencia del método ``push``, el método ``update`` actualiza la información de un objeto ya existente. Es por ello, por lo que para construir la referencia de dicho objeto es necesario su identificado. 
+
+
 ```ts
   updateObject(object:Object){
     const objectRef = ref(this.db,`/node/${object.id}`);
@@ -1999,12 +2016,66 @@ Para poder hacer uso de Realtime Database en nuestro proyecto Angular, lo primer
 
 ### 16.2.4. Borrar un objeto.
 
+Para borrar un objeto de un nodo, es tan sencillo como construir la referencia de dicho objeto y pasárselo como parámetro al método ``remove``.
+
 ```ts
   removeObject(objectId:string): Promise<void>{
     const objectRef = ref(this.db,`/node/${objectId}`);
 
     return remove(objectRef)
   }
+```
+
+## RETO: Implementación de un CRUD de tareas usando Firebase Realtime Database.
+
+El objetivo de este reto es realizar las modificaciones tanto en el servicio de ``TaskService`` como en los componentes ``TaskForm``, ``TaskResume`` y ``TaskList`` para implementar el CRUD de las Tareas de nuestra aplicación Planify usando la base de datos de Firebase.
+
+## RETO: 
+El objetivo de este reto es realizar las siguientes modificaciones en nuestro proyecto Planify para que cuando un usuario se autentique en nuestra aplicación se almacene en la base de datos la información personal de dicho usuario y además, se le permita el listado, creación, edición y borrado de sus tareas. Para ello, tomaremos como referencia el siguiente diagrama de clase:
+
+![uml-task-person](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/uml-task-person.png)
+
+Realiza las modificaciones oportunas en tu proyecto e implementa las clases y relaciones del diagrama anterior. NOTA: se ha decidido establecerle como nombre a la clase ``Person`` para evitar confusiones con las clase ``User`` de Firebase.
+
+Implementa los siguientes requisitos funcionales:
+
+- El sistema debe permitir registrarse a nuevos usuarios así como almacenar su información personal.
+- El sistema debe permitir a un usuario autenticado listar sus tareas.
+- El sistema debe permitir a un usuario autenticado crear una nueva tarea.
+- El sistema debe permitir a un usuario autenticado modificar una de sus tareas creadas previamente.
+- El sistema debe permitir a un usuario autenticado borrar una de sus tareas.
+
+Implementa los siguientes requisitos no funcionales:
+
+- Un usuario solo podrá acceder a las tareas que han sido creadas por él.
+- Un usuario no podrá modificar las tareas de otro.
+
+La estructura de la base de datos debe ser la siguiente:
+![database-structure-task](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/database-structure-task.png)
+
+
+
+TIP: 
+Para poder obtener el listado de tareas de un usuario concreto, así como crear o modificar alguna tarea de un usuario es aconsejable usar el siguiente método dentro del ``TaskService``:
+
+```ts
+  private getUserAuth():User|null{
+    return this.auth.currentUser;
+  }
+```
+Este método os permitirá obtener el ``uid`` del usuario autenticado o ``null`` si no hay ningún usuario autenticado en la aplicación.
+
+Otros fragmentos de códigos necesarios:
+
+```ts
+
+// Crear error en la promesa (catch)
+
+Promise.reject(new Error("Error al modificar la tarea"));
+
+// Permite crear un observable de un array vacío 
+
+return of([])
 ```
 
 
