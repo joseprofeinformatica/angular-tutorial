@@ -2078,7 +2078,163 @@ Promise.reject(new Error("Error al modificar la tarea"));
 return of([])
 ```
 
+# 17.Gestión de roles de un usuario
 
+En este capítulo aprenderemos a implementar los mecanismos necesarios en nuestro proyecto de Planify para poder implementar un sistema de roles. El objetivo principal es permitirle el acceso a unas funcionalidades a aquellos usuarios que tengan ciertos roles, así como mostrarle las opciones del menú que correspondan.
+
+Para poder llevar a cabo esto lo primero que debemos hacer es implementar un Guard personalizado y posteriormente veremos cómo mostrar una opción en el Navbar si el usuario autenticado tiene un rol en concreto.
+
+Es importante recordar que para la autenticación estamos usando Firebase Autentication y estamos complementando esta con Firebase Realtime Database para almacenar información específica que nos interesa de los usuarios que se registran en nuestra aplicación.
+
+![firebase-auth-database](https://raw.githubusercontent.com/joseprofeinformatica/angular-tutorial/refs/heads/main/readme-images/firebase-auth-database.png)
+
+Vamos a ponernos manos a la obra:
+
+## 17.1. Modificación de la clase `Person`
+
+Para poder adaptar la funcionalidad de nuestra aplicación según los roles de los usuarios autenticados, lo primero que debemos hacer es modificar el objeto `Person` para añadirle una nueva propiedad llamada `role` que almacenará el rol de dicho usuario:
+
+```ts
+
+export type UserRole = 'ADMIN' | 'USER';
+
+export interface Person {
+  uid?:string;
+  username: string;
+  firstname: string;
+  lastname:string
+  email: string;
+  role:UserRole;
+}
+
+```
+En este ejemplo en concreto se ha establecido que los usuarios pueden ser administrador (ADMIN) o user (USER).
+
+## 17.2 Obtención del usuario autenticado
+
+Una pregunta que vamos a tener que realizarnos con mucha frecuencia es la siguiente: ¿Quién es la persona que está autenticada en este momento? ¿Qué roles tiene?. Para poder responder a esta pregunta vamos a implementar en el servicio `person.service.ts` el siguiente método:
+
+```ts
+//person.service.ts
+    getPersonAuth():Observable<Person|null>{
+      return this.authService.getUserAuthenticated().pipe(
+        switchMap((user:User|null)=>{
+          if(user && user.uid){
+            return from(this.getPersonById(user.uid))
+          }
+          return of(null)
+        })
+      )
+    }
+```
+el método `getPersonAuth` hace una llamada al método getUserAuthenticated implementado en el servicio `auth.service.ts`:
+
+```ts
+//auth.service.ts
+  getUserAuthenticated(): Observable<User|null> {
+    return authState(this.auth);
+  }
+```
+
+El funcionamiento del método `getPersonAuth` es el siguiente:
+1. Realiza una llamada a getUserAuthenticated para obtener el usuario de Firebase Auth autenticado en la aplicación. Este método devuelve un observable.
+2. Para poder operar con los valores de un observable se está haciendo uso de la librería RxJS. Mediante `pipe` se está operando con los valores devueltos y con `switchMap` se está obteniendo la información de la persona autenticada de la base de datos, a partir de la información (UID) del usuario autenticado. En el supuesto que no exista un usuario autenticado se está devolviendo un Observable<null> con `of(null)`.
+
+En resumen, se está cambiado el flujo del Observable<User|null> a un Observable<Person|null>.
+
+## 17.3 Implementación de un guard personalizado.
+
+Lo siguiente que realizaremos será la implementación de un guard personalizado para poder garantizar que un usuario solo pueda acceder a las rutas permitidas según sus roles. Para ello, lo primero que realizaremos será la creación del guard `ng generate guard guards/role` y seleccionamos el tipo `canActivate`. Una vez generado su contenido debe ser el siguiente:
+
+```ts
+//role.guard.ts
+
+export const roleGuard: CanActivateFn = (route, state) => {
+  
+  // 1. Inyectamos los servicios necesarios
+  const db = inject(Database);
+  const router = inject(Router);
+  const personService = inject(PersonService);
+
+  // 2. Obtenemos el valor del parametro roles indicado en el app.guard.ts
+  const roles:UserRole[] = route.data['roles'];
+
+  // 3. Obtenemos la persona autenticada y operamos para modificar el flujo de datos
+  return personService.getPersonAuth().pipe(
+
+    // Tomamos solo el primer valor del observable
+    take(1),
+
+    // Convertimos de Person a true/false según los roles de la persona autenticada
+    map((person) => {
+
+      if(person){
+        if (person.role && roles.includes(person.role)) {
+          return true; //Acceso permitido
+        }
+
+        //No tiene los roles necesarios
+        router.navigate(['/home']); //Redirigimos a /home
+        return false; //Acceso denegado
+      }else{
+        //No hay niguna persona autenticada
+        router.navigate(['/login']); //Redirigimos a /login
+        return false; //Acceso denegado
+      }
+    })
+  );
+};
+```
+
+## 17.4. Uso del guard `roleGuard` en el `app.routes.ts`
+
+Para poder garantizar que solo los usuarios con los roles establecidos puedan acceder a una ruta de nuestra aplicación, será necesario hacer uso del guard implementado en el archivo `app.routes.ts` de la siguiente forma:
+
+```ts
+// app.routes.ts
+export const routes: Routes = [
+    {path:'tasks', component:TaskListComponent,canActivate: [roleGuard],data: { roles: ['USER'] }}
+]
+```
+Observa cómo en la sintaxis anterior solo se está permitiendo el acceso a la ruta `/tasks` a aquellos usuarios que tienen el rol ´USER´. Mediante `canActivate: [roleGuard]` se está indicando que la ruta se active si el Guard `roleGuard` devuelve `True` y además se le está pasando como parámetro el rol que debe tener el usuario para poder acceder a dicha ruta `data: { roles: ['USER'] }`
+
+
+# 17.5. Mostras opciones del menú según el rol del usuario autenticado.
+
+Para poder controlar las opciones del componente `Navbar` que se desean mostrar según el rol del usuario autenticado, será necesario llamar al método `getPersonAuth()` en el servicio `person.service.ts` y pasarle a la vista `navbar.component.html` la información de la persona autenticada para poder mostrar unas opciones u otras según los roles de esta:
+
+```ts
+// navbar.component.ts
+@Component({
+  selector: 'app-navbar',
+  imports: [CommonModule,RouterLink],
+  templateUrl: './navbar.component.html',
+  styleUrl: './navbar.component.css'
+})
+export class NavbarComponent implements OnInit {
+
+  public authService = inject(AuthService);
+  public personService = inject(PersonService);
+  private router = inject(Router);
+  personAuth: Person | null = null;
+
+  ngOnInit(): void {
+    this.personService.getPersonAuth().subscribe((person:Person|null)=>{this.personAuth=person})
+  }
+
+  logout(){
+    this.authService.logout();
+    this.router.navigate(["/home"])
+  }
+}
+```
+
+```html
+<!--navbar.component.html-->
+        <li *ngIf="personAuth!=null && personAuth.role == 'USER'" class="nav-item">
+          <a class="nav-link" routerLink="/tasks">Tasks</a>
+        </li>
+```
 
 # Bibliografía
 
